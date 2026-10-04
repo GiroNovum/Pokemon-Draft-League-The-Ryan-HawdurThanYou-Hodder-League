@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Champions Draft League</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;500;600;700;800&family=Saira+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0f1f; --bg2:#0d1428; --panel:#141e3a; --panel2:#1a274d;
+  --panelHi:#22315e; --line:rgba(150,180,255,.10); --lineHi:rgba(150,180,255,.22);
+  --text:#eaf0ff; --muted:#8c9bc4; --faint:#5f6e98;
+  --accent:#28d6ff; --accent2:#ffb22e; --accentDim:#1a8fb0;
+  --good:#3fe0a0; --warn:#ffcc4d; --bad:#ff5d73;
+  --shadow:0 14px 40px -12px rgba(0,0,0,.6);
+  --t-normal:#9099a1;--t-fire:#ff7d3b;--t-water:#4d90d5;--t-electric:#f7c948;
+  --t-grass:#5dbb5b;--t-ice:#74cfc0;--t-fighting:#e0413e;--t-poison:#a865c9;
+  --t-ground:#d9885a;--t-flying:#8fa9de;--t-psychic:#fa6f8e;--t-bug:#8cb230;
+  --t-rock:#c6b884;--t-ghost:#6b5aa0;--t-dragon:#5868d6;--t-dark:#5a5470;
+  --t-steel:#7f8fa6;--t-fairy:#f08fd0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(1100px 600px at 78% -8%, rgba(40,214,255,.10), transparent 60%),
+    radial-gradient(900px 600px at 5% 110%, rgba(255,178,46,.07), transparent 55%),
+    linear-gradient(180deg,var(--bg),var(--bg2));
+  color:var(--text);font-family:'Inter',system-ui,sans-serif;min-height:100vh;
+  font-size:14px;-webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.disp{font-family:'Saira',sans-serif}
+.cond{font-family:'Saira Condensed',sans-serif}
+button{font-family:inherit;cursor:pointer;color:inherit}
+input,select{font-family:inherit}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-thumb{background:var(--panelHi);border-radius:8px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
+  padding:12px 22px;background:rgba(10,15,31,.82);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand .mark{width:38px;height:38px;border-radius:11px;flex:none;
+  background:conic-gradient(from 220deg,var(--accent),#5b8cff,var(--accent2),var(--accent));
+  display:grid;place-items:center;box-shadow:0 0 22px -4px var(--accent);position:relative}
+.brand .mark::after{content:"";position:absolute;inset:3px;border-radius:8px;background:var(--bg);}
+.brand .mark span{position:relative;z-index:1;font-family:'Saira';font-weight:800;font-size:20px;
+  background:linear-gradient(180deg,var(--accent),#7fb6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand .titles{min-width:0}
+.brand .league-name{font-family:'Saira';font-weight:700;font-size:18px;letter-spacing:.4px;line-height:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:42vw}
+.brand .sub{font-size:10.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--faint);margin-top:3px}
+.tabs{display:flex;gap:4px;background:var(--panel);padding:4px;border-radius:12px;border:1px solid var(--line)}
+.tab{padding:9px 18px;border:none;background:transparent;color:var(--muted);font-weight:600;
+  border-radius:9px;font-size:13px;letter-spacing:.3px;transition:.15s;display:flex;align-items:center;gap:7px}
+.tab:hover{color:var(--text)}
+.tab.active{background:linear-gradient(180deg,var(--accent),var(--accentDim));color:#04121a;box-shadow:0 6px 16px -6px var(--accent)}
+.tab .badge{background:rgba(0,0,0,.18);border-radius:6px;padding:1px 6px;font-size:11px}
+.tab:not(.active) .badge{background:var(--panel2);color:var(--muted)}
+.spacer{flex:1}
+.lg-menu{position:relative}
+.btn{border:1px solid var(--lineHi);background:var(--panel);color:var(--text);padding:9px 14px;
+  border-radius:10px;font-weight:600;font-size:12.5px;transition:.15s;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{background:var(--panel2);border-color:var(--accent)}
+.btn.primary{background:linear-gradient(180deg,var(--accent),var(--accentDim));color:#04121a;border-color:transparent;font-weight:700}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:6px 10px;font-size:11.5px;border-radius:8px}
+.btn.danger:hover{border-color:var(--bad);color:var(--bad)}
+.menu{position:absolute;right:0;top:46px;background:var(--panel);border:1px solid var(--lineHi);
+  border-radius:12px;box-shadow:var(--shadow);padding:6px;min-width:210px;z-index:60;display:none}
+.menu.open{display:block;animation:pop .14s ease}
+@keyframes pop{from{opacity:0;transform:translateY(-6px)}}
+.menu button{display:flex;width:100%;align-items:center;gap:10px;padding:9px 11px;background:transparent;
+  border:none;border-radius:8px;font-size:13px;text-align:left}
+.menu button:hover{background:var(--panel2)}
+.menu .sep{height:1px;background:var(--line);margin:5px 2px}
+.menu .lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);padding:7px 11px 3px}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1320px;margin:0 auto;padding:22px}
+.page{display:none}.page.active{display:block;animation:fade .2s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}}
+
+/* ---------- snake tracker ---------- */
+.clockbar{background:linear-gradient(180deg,var(--panel),rgba(20,30,58,.6));border:1px solid var(--line);
+  border-radius:16px;padding:14px 16px;margin-bottom:18px;box-shadow:var(--shadow)}
+.clock-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.onclock{display:flex;align-items:center;gap:12px}
+.onclock .pulse{width:11px;height:11px;border-radius:50%;background:var(--good);box-shadow:0 0 0 0 var(--good);animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(63,224,160,.5)}70%{box-shadow:0 0 0 9px rgba(63,224,160,0)}100%{box-shadow:0 0 0 0 rgba(63,224,160,0)}}
+.onclock .lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--faint)}
+.onclock .who{font-family:'Saira';font-weight:700;font-size:19px;line-height:1.05}
+.onclock .rnd{font-size:11.5px;color:var(--muted)}
+.draft-for{display:flex;align-items:center;gap:9px;margin-left:auto}
+.draft-for label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint)}
+.sel{background:var(--panel2);border:1px solid var(--lineHi);color:var(--text);padding:8px 11px;
+  border-radius:9px;font-size:13px;font-weight:600}
+.sel:focus{outline:2px solid var(--accent);outline-offset:1px}
+.snake{display:flex;gap:7px;margin-top:13px;overflow-x:auto;padding-bottom:3px}
+.snode{flex:none;min-width:118px;background:var(--panel2);border:1px solid var(--line);border-radius:11px;
+  padding:8px 11px;position:relative;transition:.15s}
+.snode.cur{border-color:var(--good);box-shadow:0 0 0 1px var(--good),0 8px 18px -8px var(--good)}
+.snode.done{opacity:.5}
+.snode .pos{font-size:10px;color:var(--faint);font-weight:700;letter-spacing:1px}
+.snode .nm{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.snode .mini{display:flex;justify-content:space-between;margin-top:5px;font-size:10.5px;color:var(--muted)}
+.snode .pts{color:var(--accent2);font-weight:700}
+
+/* ---------- controls row ---------- */
+.controls{display:flex;gap:11px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.search{position:relative;flex:1;min-width:200px}
+.search input{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--text);
+  padding:11px 13px 11px 38px;border-radius:11px;font-size:13.5px}
+.search input:focus{outline:none;border-color:var(--accent)}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.5}
+.chiprow{display:flex;gap:6px;flex-wrap:wrap}
+.fchip{padding:7px 12px;border-radius:20px;font-size:11.5px;font-weight:700;letter-spacing:.4px;
+  border:1px solid var(--line);background:var(--panel);color:var(--muted);transition:.12s;text-transform:capitalize}
+.fchip:hover{border-color:var(--lineHi);color:var(--text)}
+.fchip.on{color:#fff;border-color:transparent}
+.view-toggle{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:3px}
+.view-toggle button{padding:7px 12px;border:none;background:transparent;color:var(--muted);border-radius:7px;font-weight:600;font-size:12px}
+.view-toggle button.on{background:var(--panel2);color:var(--text)}
+
+/* ---------- board grid ---------- */
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:14px}
+.pcard{background:linear-gradient(180deg,var(--panel),rgba(18,27,52,.55));border:1px solid var(--line);
+  border-radius:16px;overflow:hidden;position:relative;transition:.18s;display:flex;flex-direction:column}
+.pcard:hover{border-color:var(--lineHi);transform:translateY(-3px);box-shadow:var(--shadow)}
+.pcard.drafted{opacity:.46;filter:saturate(.5)}
+.pcard.unaffordable:not(.drafted){opacity:.62}
+.pcard .toprow{display:flex;padding:12px 13px 0}
+.cost-badge{font-family:'Saira';font-weight:800;font-size:15px;color:var(--accent2);
+  background:rgba(255,178,46,.12);border:1px solid rgba(255,178,46,.3);border-radius:10px;
+  padding:5px 9px;display:flex;align-items:center;gap:4px;line-height:1}
+.cost-badge small{font-size:9px;letter-spacing:1px;color:var(--accent2);opacity:.8;font-weight:700}
+.mega-badge{margin-left:auto;font-family:'Saira Condensed';font-weight:700;font-size:10px;letter-spacing:1.5px;
+  background:linear-gradient(90deg,#ff5db1,#a96bff);color:#fff;padding:4px 8px;border-radius:7px;align-self:flex-start}
+.sprite-wrap{height:120px;display:grid;place-items:center;position:relative;margin-top:-4px}
+.sprite-wrap img{max-height:118px;max-width:88%;image-rendering:auto;filter:drop-shadow(0 8px 12px rgba(0,0,0,.45))}
+.sprite-fallback{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;
+  font-family:'Saira';font-weight:800;font-size:26px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.pname{font-family:'Saira';font-weight:700;font-size:15.5px;padding:2px 13px 0;line-height:1.12;
+  display:flex;align-items:center;gap:6px;min-height:34px}
+.types{display:flex;gap:5px;padding:7px 13px 0;flex-wrap:wrap}
+.tchip{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#fff;
+  padding:3px 9px;border-radius:6px;text-shadow:0 1px 1px rgba(0,0,0,.25)}
+.pcard .foot{margin-top:auto;padding:11px 13px 13px}
+.statbtn{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--muted);
+  padding:7px;border-radius:9px;font-size:11px;font-weight:600;letter-spacing:.5px;display:flex;
+  align-items:center;justify-content:center;gap:6px;transition:.12s}
+.statbtn:hover{color:var(--text);border-color:var(--lineHi)}
+.draft-btn{width:100%;margin-top:8px;background:linear-gradient(180deg,var(--accent),var(--accentDim));
+  color:#04121a;border:none;padding:10px;border-radius:10px;font-weight:800;font-size:13px;letter-spacing:.4px;transition:.12s}
+.draft-btn:hover{filter:brightness(1.08)}
+.draft-btn:disabled{background:var(--panel2);color:var(--faint);cursor:not-allowed;filter:none}
+.drafted-tag{width:100%;margin-top:8px;text-align:center;padding:9px;border-radius:10px;font-weight:700;
+  font-size:12px;background:var(--panel2);color:var(--muted);border:1px dashed var(--lineHi);
+  display:flex;align-items:center;justify-content:center;gap:7px}
+.drafted-tag .dot{width:8px;height:8px;border-radius:50%}
+/* stats panel */
+.stats{display:none;padding:0 13px;overflow:hidden}
+.stats.open{display:block;animation:expand .2s ease}
+@keyframes expand{from{opacity:0}}
+.bst{display:flex;justify-content:space-between;align-items:baseline;margin:4px 0 7px}
+.bst .ttl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint)}
+.bst .val{font-family:'Saira';font-weight:800;font-size:16px;color:var(--text)}
+.srow{display:grid;grid-template-columns:34px 30px 1fr;gap:7px;align-items:center;margin-bottom:5px}
+.srow .k{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.5px}
+.srow .n{font-size:11px;font-weight:700;text-align:right;font-family:'Saira'}
+.sbar{height:6px;border-radius:4px;background:var(--panel2);overflow:hidden}
+.sbar i{display:block;height:100%;border-radius:4px}
+.abil{display:flex;gap:5px;flex-wrap:wrap;margin:9px 0 4px}
+.abil .a{font-size:10.5px;font-weight:600;background:var(--panelHi);color:var(--text);
+  padding:3px 9px;border-radius:6px;border:1px solid var(--line)}
+.note{font-size:10px;color:var(--faint);margin:2px 0 6px;font-style:italic}
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty .big{font-family:'Saira';font-size:20px;color:var(--text);margin-bottom:6px}
+
+/* ---------- teams ---------- */
+.teams-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.teams-head h2{margin:0;font-size:22px;font-weight:700;letter-spacing:.5px}
+.pcount{display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);
+  border-radius:11px;padding:7px 9px}
+.pcount .num{font-family:'Saira';font-weight:800;font-size:17px;min-width:20px;text-align:center}
+.rnd-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--lineHi);background:var(--panel2);
+  font-size:18px;font-weight:700;display:grid;place-items:center;transition:.12s;line-height:1}
+.rnd-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.rnd-btn:disabled{opacity:.35;cursor:not-allowed}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+.tcard{background:linear-gradient(180deg,var(--panel),rgba(18,27,52,.5));border:1px solid var(--line);
+  border-radius:18px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.tcard .head{display:flex;gap:13px;padding:15px;align-items:center;position:relative;
+  border-bottom:1px solid var(--line)}
+.logo{width:62px;height:62px;border-radius:14px;flex:none;background:var(--panel2);border:1px solid var(--lineHi);
+  display:grid;place-items:center;overflow:hidden;cursor:pointer;position:relative;transition:.15s}
+.logo:hover{border-color:var(--accent)}
+.logo img{width:100%;height:100%;object-fit:cover}
+.logo .ph{font-family:'Saira';font-weight:800;font-size:22px;color:var(--accent)}
+.logo .cam{position:absolute;inset:0;background:rgba(8,12,24,.74);display:none;place-items:center;
+  font-size:10px;font-weight:700;color:var(--accent);letter-spacing:.5px;text-align:center;flex-direction:column;gap:3px}
+.logo:hover .cam{display:grid}
+.tinfo{flex:1;min-width:0}
+.tname-in{background:transparent;border:none;color:var(--text);font-family:'Saira';font-weight:700;
+  font-size:18px;width:100%;padding:2px 4px;border-radius:7px;border:1px solid transparent}
+.tname-in:hover{background:var(--panel2)}
+.tname-in:focus{outline:none;background:var(--panel2);border-color:var(--accent)}
+.pname-in{background:transparent;border:none;color:var(--muted);font-size:12px;width:100%;padding:1px 5px;
+  border-radius:6px;margin-top:2px;border:1px solid transparent}
+.pname-in:hover{background:var(--panel2)}
+.pname-in:focus{outline:none;background:var(--panel2);border-color:var(--lineHi);color:var(--text)}
+.tcard .budget{padding:13px 15px}
+.bud-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.bud-top .left{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint)}
+.bud-top .big{font-family:'Saira';font-weight:800;font-size:17px}
+.bud-top .big .acc{color:var(--accent2)}
+.bud-top .big .sm{font-size:12px;color:var(--muted);font-weight:600}
+.budbar{height:9px;border-radius:6px;background:var(--panel2);overflow:hidden;display:flex}
+.budbar i{height:100%;background:linear-gradient(90deg,var(--accent2),#ff8a3d)}
+.meta{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+.pill{font-size:11px;font-weight:600;background:var(--panel2);border:1px solid var(--line);
+  border-radius:7px;padding:4px 9px;color:var(--muted);display:flex;gap:5px;align-items:center}
+.pill b{color:var(--text);font-family:'Saira';font-weight:700}
+.pill.ok b{color:var(--good)} .pill.short b{color:var(--warn)}
+.roster{padding:5px 15px 15px;flex:1}
+.ritem{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:10px;transition:.12s}
+.ritem:hover{background:var(--panel2)}
+.ritem img{width:38px;height:38px;flex:none;object-fit:contain}
+.ritem .rfall{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:'Saira';
+  font-weight:800;font-size:14px;color:#fff;flex:none}
+.ritem .rn{flex:1;min-width:0}
+.ritem .rn .nm{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ritem .rn .ty{display:flex;gap:4px;margin-top:3px}
+.ritem .rn .ty span{font-size:8px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#fff;padding:1px 5px;border-radius:4px}
+.ritem .rc{font-family:'Saira';font-weight:800;color:var(--accent2);font-size:14px}
+.ritem .rx{width:24px;height:24px;border-radius:7px;border:1px solid transparent;background:transparent;
+  color:var(--faint);font-size:15px;display:grid;place-items:center;flex:none;transition:.12s}
+.ritem .rx:hover{background:rgba(255,93,115,.14);color:var(--bad)}
+.r-empty{text-align:center;color:var(--faint);font-size:12px;padding:22px 0;border:1px dashed var(--line);border-radius:12px;margin-top:6px}
+.order-badge{position:absolute;top:11px;right:13px;font-family:'Saira';font-weight:800;font-size:11px;
+  letter-spacing:1px;color:var(--faint);background:var(--panel2);border:1px solid var(--line);padding:3px 8px;border-radius:7px}
+.tremove{position:absolute;bottom:11px;right:13px}
+
+/* modal / toast */
+.overlay{position:fixed;inset:0;background:rgba(5,8,18,.7);backdrop-filter:blur(4px);z-index:80;
+  display:none;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex;animation:fade .15s}
+.modal{background:var(--panel);border:1px solid var(--lineHi);border-radius:18px;box-shadow:var(--shadow);
+  width:100%;max-width:440px;padding:22px;animation:pop .18s ease}
+.modal h3{margin:0 0 4px;font-size:19px;font-weight:700}
+.modal p{margin:0 0 16px;color:var(--muted);font-size:13px;line-height:1.5}
+.modal input{width:100%;background:var(--bg2);border:1px solid var(--lineHi);color:var(--text);
+  padding:11px 13px;border-radius:10px;font-size:14px;margin-bottom:16px}
+.modal input:focus{outline:none;border-color:var(--accent)}
+.modal .row{display:flex;gap:10px;justify-content:flex-end}
+.lglist{max-height:280px;overflow:auto;margin:-4px 0 16px}
+.lgitem{display:flex;align-items:center;gap:11px;padding:11px;border-radius:11px;border:1px solid var(--line);
+  margin-bottom:8px;transition:.12s}
+.lgitem:hover{border-color:var(--lineHi);background:var(--panel2)}
+.lgitem.cur{border-color:var(--accent)}
+.lgitem .li-main{flex:1;min-width:0}
+.lgitem .li-name{font-family:'Saira';font-weight:700;font-size:15px}
+.lgitem .li-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.lgitem .cur-tag{font-size:10px;letter-spacing:1px;color:var(--accent);font-weight:700;text-transform:uppercase}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:90;
+  background:var(--panel);border:1px solid var(--lineHi);border-radius:12px;padding:13px 18px;
+  box-shadow:var(--shadow);display:flex;align-items:center;gap:11px;opacity:0;transition:.25s;pointer-events:none;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast .ic{width:9px;height:9px;border-radius:50%;background:var(--good);flex:none}
+.toast.err .ic{background:var(--bad)}
+.toast .msg{font-size:13px;font-weight:600}
+.hidden{display:none!important}
+
+@media(max-width:720px){
+  .topbar{flex-wrap:wrap;gap:10px;padding:10px 14px}
+  .brand .league-name{max-width:60vw}
+  .tabs{order:3;width:100%}.tab{flex:1;justify-content:center}
+  .wrap{padding:14px}
+  .board{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+  .draft-for{margin-left:0;width:100%}
+}
+/* ---------- multiplayer ---------- */
+.conn-pill{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;
+  border:1px solid var(--lineHi);background:var(--panel);font-size:11.5px;font-weight:600;color:var(--muted);white-space:nowrap}
+.conn-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--faint);box-shadow:0 0 0 3px rgba(255,255,255,.03)}
+.conn-pill[data-state="host"]{color:var(--good);border-color:rgba(63,224,160,.4)}
+.conn-pill[data-state="host"] .dot{background:var(--good);box-shadow:0 0 10px -1px var(--good);animation:cpulse 2s infinite}
+.conn-pill[data-state="guest"]{color:var(--accent);border-color:rgba(40,214,255,.4)}
+.conn-pill[data-state="guest"] .dot{background:var(--accent);box-shadow:0 0 10px -1px var(--accent);animation:cpulse 2s infinite}
+@keyframes cpulse{0%,100%{opacity:1}50%{opacity:.45}}
+.sel.locked{opacity:.85;cursor:default;border-style:dashed}
+.turn-banner{margin-top:12px;padding:11px 16px;border-radius:11px;font-weight:700;font-size:13.5px;letter-spacing:.2px;
+  display:flex;align-items:center;gap:9px;border:1px solid var(--line)}
+.turn-banner::before{content:"";width:9px;height:9px;border-radius:50%;flex:none}
+.turn-banner.you{background:linear-gradient(90deg,rgba(63,224,160,.18),transparent);border-color:rgba(63,224,160,.45);color:var(--good)}
+.turn-banner.you::before{background:var(--good);box-shadow:0 0 10px var(--good);animation:cpulse 1.4s infinite}
+.turn-banner.wait{background:rgba(255,255,255,.02);color:var(--muted)}
+.turn-banner.wait::before{background:var(--faint)}
+.turn-banner.host{background:linear-gradient(90deg,rgba(40,214,255,.14),transparent);border-color:rgba(40,214,255,.4);color:var(--accent)}
+.turn-banner.host::before{background:var(--accent);box-shadow:0 0 10px var(--accent)}
+.tcard.oc{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 14px 40px -12px rgba(40,214,255,.35)}
+.tcard.mine{border-color:rgba(63,224,160,.5)}
+.claimrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 12px;padding:8px 11px;
+  border-radius:10px;background:var(--bg2);border:1px solid var(--line);font-size:12.5px}
+.claimrow .who{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.claimrow .cd{width:8px;height:8px;border-radius:50%;flex:none;background:var(--faint)}
+.claimrow .cd.on{background:var(--good);box-shadow:0 0 8px -1px var(--good)}
+.claimrow .cd.off{background:var(--warn)}
+.claimrow.mine{background:rgba(63,224,160,.08);border-color:rgba(63,224,160,.3)}
+.claimrow .ctag{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.cbtn{border:1px solid var(--lineHi);background:var(--panel);color:var(--text);padding:6px 11px;border-radius:8px;font-weight:700;font-size:11.5px;flex:none}
+.cbtn:hover{border-color:var(--accent)}
+.cbtn.primary{background:linear-gradient(180deg,var(--accent),var(--accentDim));color:#04121a;border-color:transparent}
+.cbtn.ghost{background:transparent;color:var(--muted)}
+.tname-in[readonly],.pname-in[readonly]{opacity:.85;cursor:default}
+/* mp modal bits */
+.mp-choice{display:flex;flex-direction:column;gap:10px;margin:6px 0 4px}
+.mp-opt{display:flex;gap:13px;align-items:flex-start;text-align:left;width:100%;padding:14px;border-radius:12px;
+  border:1px solid var(--lineHi);background:var(--panel);transition:.15s}
+.mp-opt:hover{border-color:var(--accent);background:var(--panel2)}
+.mp-opt .ico{width:34px;height:34px;border-radius:9px;flex:none;display:grid;place-items:center;background:var(--panel2);color:var(--accent)}
+.mp-opt .ti{font-weight:700;font-size:14px;margin-bottom:2px}
+.mp-opt .ds{font-size:12px;color:var(--muted);line-height:1.45}
+.code-box{display:flex;align-items:center;justify-content:center;gap:4px;font-family:'Saira',sans-serif;font-weight:800;
+  font-size:34px;letter-spacing:8px;padding:14px;border-radius:12px;background:var(--bg2);border:1px dashed var(--lineHi);
+  color:var(--accent);margin:4px 0 12px}
+.link-row{display:flex;gap:8px;margin-bottom:14px}
+.link-row input{flex:1;min-width:0;background:var(--bg2);border:1px solid var(--line);color:var(--text);padding:10px 12px;border-radius:9px;font-size:12px}
+.peer-list{display:flex;flex-direction:column;gap:7px;margin:6px 0 14px;max-height:220px;overflow:auto}
+.peer-row{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:9px;background:var(--bg2);border:1px solid var(--line);font-size:12.5px}
+.peer-row .pd{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 8px -1px var(--good);flex:none}
+.peer-row .pn{font-weight:600}
+.peer-row .ps{margin-left:auto;color:var(--muted);font-size:11.5px}
+.mp-note{font-size:11.5px;color:var(--muted);line-height:1.5;background:rgba(255,204,77,.07);border:1px solid rgba(255,204,77,.2);
+  padding:9px 12px;border-radius:9px;margin-top:4px}
+.dc-list{display:flex;flex-direction:column;gap:6px;margin:12px 0}
+.dc-row{display:flex;justify-content:space-between;gap:10px;padding:9px 13px;border-radius:9px;background:var(--bg2);border:1px solid var(--line);font-size:13px}
+.dc-row span{font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dc-row b{color:var(--accent);white-space:nowrap}
+.fa-banner{background:linear-gradient(180deg,rgba(255,178,46,.14),rgba(255,178,46,.06));border:1px solid var(--accent2);color:var(--text);border-radius:12px;padding:11px 14px;font-size:13px;margin-bottom:14px}
+.fa-banner b{color:var(--accent2)}
+#faBtn.on{background:linear-gradient(180deg,var(--accent2),#e89a18);color:#1a1206;border-color:transparent;font-weight:700}
+.draft-btn.fa{background:linear-gradient(180deg,var(--accent2),#e89a18);color:#1a1206;border-color:transparent;font-weight:700}
+.trade-btn{color:var(--accent)}
+.trade-modal{max-width:700px;width:700px;max-height:88vh;overflow:auto}
+.trade-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 12px}
+.trade-col{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:10px}
+.tc-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}
+.tc-head .nm{font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tc-head .pts{font-size:12px;font-weight:700;white-space:nowrap}
+.tc-head .pts.ok{color:var(--accent)} .tc-head .pts.bad{color:var(--bad)}
+.trade-mons{display:flex;flex-direction:column;gap:5px;max-height:46vh;overflow:auto}
+.trade-mon{display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px 8px;cursor:pointer;text-align:left;color:var(--text);font-size:12px;font-family:inherit}
+.trade-mon img{width:26px;height:26px;image-rendering:pixelated;flex:none}
+.trade-mon span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trade-mon i{font-style:normal;font-weight:700;color:var(--accent2)}
+.trade-mon.on{border-color:var(--accent);background:rgba(40,214,255,.14);box-shadow:0 0 0 1px var(--accent) inset}
+.trade-mon.read{cursor:default;opacity:.92}
+.trade-foot{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.tc-accept{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px}
+.tc-accept .acc-yes{color:var(--good)} .tc-accept .acc-no{color:var(--muted)}
+/* ===== Schedule / Playoffs / KO pages ===== */
+.page-head{display:flex;align-items:center;gap:14px;margin:4px 0 18px;flex-wrap:wrap}
+.page-head h2{font-family:'Saira',sans-serif;font-weight:800;font-size:26px;letter-spacing:.5px;margin:0}
+.page-head .ph-sub{font-size:12px;color:var(--muted)}
+.host-note{margin-left:auto;font-size:11px;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+.host-note:empty{display:none}
+.sched-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media(max-width:840px){.sched-grid{grid-template-columns:1fr}}
+.sc-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.sc-head{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--panel2);border-bottom:1px solid var(--line)}
+.sc-badge{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-family:'Saira';font-weight:800;color:#0a0e1a;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.sc-title{font-family:'Saira';font-weight:700;font-size:16px;letter-spacing:.5px}
+.sc-date{margin-left:auto;font-size:11px;font-weight:700;color:var(--accent2);background:var(--bg);border:1px solid var(--lineHi);border-radius:6px;padding:4px 8px}
+.sc-body{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.mrow{display:grid;grid-template-columns:1fr 30px 1fr;align-items:center;gap:8px}
+.mpill{padding:8px 10px;border-radius:8px;font-family:'Saira';font-weight:700;font-size:14px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mvs{font-size:11px;color:var(--muted);font-weight:700;text-align:center}
+.seed-panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:20px}
+.seed-panel h3{margin:0 0 10px;font-family:'Saira';font-weight:700;font-size:14px;letter-spacing:.4px;color:var(--muted);text-transform:uppercase}
+.seed-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:840px){.seed-grid{grid-template-columns:repeat(2,1fr)}}
+.seed-cell{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 8px}
+.seed-no{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-family:'Saira';font-weight:800;font-size:13px;background:var(--bg);border:1px solid var(--lineHi);color:var(--accent);flex:none}
+.seed-cell select{flex:1;min-width:0;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:5px;font-size:13px}
+.seed-static{flex:1;min-width:0;font-family:'Saira';font-weight:700;font-size:13px;padding:5px 8px;border-radius:6px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bracket{display:flex;gap:14px;overflow-x:auto;padding-bottom:10px;align-items:stretch}
+.bk-col{display:flex;flex-direction:column;justify-content:space-around;gap:14px;min-width:186px;flex:1}
+.bk-col.finals{justify-content:center;min-width:206px}
+.bk-round{font-size:10px;font-weight:800;letter-spacing:.7px;color:var(--muted);text-align:center;margin-bottom:2px;text-transform:uppercase}
+.bk-match{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.bk-match.final{border-color:var(--accent2);box-shadow:0 0 0 1px rgba(255,178,46,.25)}
+.bk-mhead{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px}
+.bk-slot{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;background:var(--panel2);border:1px solid transparent}
+.bk-slot.pick{cursor:pointer}
+.bk-slot.pick:hover{border-color:var(--lineHi)}
+.bk-slot.win{border-color:var(--accent);background:linear-gradient(90deg,rgba(40,214,255,.16),transparent)}
+.bk-dot{width:12px;height:12px;border-radius:3px;flex:none}
+.bk-name{font-family:'Saira';font-weight:700;font-size:13px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bk-name.tbd{color:var(--muted);font-weight:600;font-style:italic}
+.bk-check{color:var(--accent);font-size:13px;font-weight:800}
+.champ-tag{text-align:center;font-family:'Saira';font-weight:800;font-size:14px;color:var(--accent2);margin-top:8px}
+.ko-add-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.ko-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:980px){.ko-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.ko-grid{grid-template-columns:repeat(2,1fr)}}
+.ko-card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 8px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.ko-card img{width:96px;height:96px;image-rendering:auto;object-fit:contain}
+.ko-card .ko-name{font-family:'Saira';font-weight:700;font-size:10px;line-height:1.15;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ko-card .ko-count{font-family:'Saira';font-weight:800;font-size:18px;color:var(--accent);min-width:22px;text-align:center}
+.ko-card .ko-ctrl{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:2px}
+.ko-btn{width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font-size:14px;font-weight:700;cursor:pointer;display:grid;place-items:center;line-height:1}
+.ko-btn:hover{border-color:var(--lineHi)}
+.ko-btn.minus{color:var(--bad,#e84a4a)}
+.ko-btn.plus{color:var(--good,#3ac978)}
+.ko-rm{position:absolute;top:3px;right:4px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:2px;line-height:1}
+.ko-rm:hover{color:var(--bad,#e84a4a)}
+.ko-empty{color:var(--muted);text-align:center;padding:44px 20px;background:var(--panel);border:1px dashed var(--line);border-radius:12px}
+.ko-pick-list{max-height:360px;overflow-y:auto;display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.ko-pick{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;cursor:pointer;color:var(--text);font-size:13px;text-align:left}
+.ko-pick:hover{border-color:var(--accent)}
+.ko-pick img{width:32px;height:32px;image-rendering:pixelated;flex:none}
+
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="mark"><span>C</span></div>
+    <div class="titles">
+      <div class="league-name" id="leagueName">Champions Draft</div>
+      <div class="sub">Pokémon Champions · Draft League</div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" data-tab="board" id="tabBoard">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Draft Board
+    </button>
+    <button class="tab" data-tab="teams" id="tabTeams">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Teams <span class="badge" id="teamCountBadge">4</span>
+    </button>
+    <button class="tab" data-tab="schedule" id="tabSchedule">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Schedule
+    </button>
+    <button class="tab" data-tab="playoffs" id="tabPlayoffs">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+      Playoffs
+    </button>
+    <button class="tab" data-tab="kos" id="tabKos">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>
+      KO Tracker
+    </button>
+  </nav>
+  <div class="spacer"></div>
+  <button class="btn ghost sm" id="undoBtn" title="Undo last pick">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+    Undo
+  </button>
+  <div class="conn-pill" id="connPill" data-state="off" title="Multiplayer status"><span class="dot"></span><span class="txt">Offline</span></div>
+  <button class="btn" id="mpBtn" title="Host or join an online draft">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 7l3 3M17 7l-3 3M7 17l3-3M17 17l-3-3"/></svg>
+    <span class="mptxt">Multiplayer</span>
+  </button>
+  <div class="lg-menu">
+    <button class="btn" id="leagueBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      League
+    </button>
+    <div class="menu" id="leagueMenu">
+      <div class="lbl">Current League</div>
+      <button data-act="rename"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> Rename league</button>
+      <button data-act="reset"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.3 2.6L3 8"/><path d="M3 3v5h5"/></svg> Reset all picks</button>
+      <div class="sep"></div>
+      <div class="lbl">Leagues</div>
+      <button data-act="new"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> New league</button>
+      <button data-act="switch"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h13l-3-3M21 17H8l3 3"/></svg> Load / switch league</button>
+      <button data-act="duplicate"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg> Duplicate league</button>
+      <div class="sep"></div>
+      <button data-act="delete" class="danger"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg> Delete league</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- ============ DRAFT BOARD ============ -->
+  <section class="page active" id="page-board">
+    <div class="clockbar">
+      <div class="clock-top">
+        <div class="onclock">
+          <div class="pulse"></div>
+          <div>
+            <div class="lbl">On the clock</div>
+            <div class="who" id="onClockName">—</div>
+            <div class="rnd" id="onClockRound"></div>
+          </div>
+        </div>
+        <div class="draft-for">
+          <label for="draftForSel">Drafting for</label>
+          <select class="sel" id="draftForSel"></select>
+        </div>
+      </div>
+      <div class="snake" id="snakeTrack"></div>
+      <div class="turn-banner" id="turnBanner" hidden></div>
+    </div>
+
+    <div class="controls">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+        <input type="text" id="searchIn" placeholder="Search Pokémon…">
+      </div>
+      <select class="sel" id="sortSel">
+        <option value="cost-desc">Cost: High → Low</option>
+        <option value="cost-asc">Cost: Low → High</option>
+        <option value="name">Name A → Z</option>
+        <option value="bst-desc">BST: High → Low</option>
+      </select>
+      <div class="view-toggle" id="availToggle">
+        <button data-av="all" class="on">All</button>
+        <button data-av="avail">Available</button>
+      </div>
+      <button class="btn sm" id="faBtn" style="display:none">⇄ Free agency</button>
+    </div>
+    <div class="fa-banner" id="faBanner" hidden>Free agency is open — click <b>+ Swap in</b> on any available Pokémon, then choose who to drop. Trades live on the <b>Teams</b> tab.</div>
+    <div class="chiprow" id="typeFilters" style="margin-bottom:16px"></div>
+
+    <div class="board" id="board"></div>
+  </section>
+
+  <!-- ============ TEAMS ============ -->
+  <section class="page" id="page-teams">
+    <div class="teams-head">
+      <h2 class="disp">Teams</h2>
+      <div class="pcount">
+        <button class="rnd-btn" id="remPlayer" title="Remove last team">−</button>
+        <div class="num" id="playerNum">4</div>
+        <button class="rnd-btn" id="addPlayer" title="Add team">+</button>
+      </div>
+      <span style="font-size:12px;color:var(--muted)">2–8 teams · drag the order with the arrows on each card</span>
+    </div>
+    <div class="tgrid" id="teamGrid"></div>
+  </section>
+
+  <!-- ============ SCHEDULE ============ -->
+  <section class="page" id="page-schedule">
+    <div class="page-head"><h2>Schedule</h2><span class="ph-sub">Season 1 · regular season · round-robin</span></div>
+    <div class="sched-grid" id="schedGrid"></div>
+  </section>
+
+  <!-- ============ PLAYOFFS ============ -->
+  <section class="page" id="page-playoffs">
+    <div class="page-head"><h2>Playoffs</h2><span class="ph-sub">Championship + consolation bracket</span><span class="host-note" id="pfHostNote"></span></div>
+    <div id="seedPanel"></div>
+    <div class="bracket" id="bracket"></div>
+  </section>
+
+  <!-- ============ KO TRACKER ============ -->
+  <section class="page" id="page-kos">
+    <div class="page-head"><h2>KO Tracker</h2><span class="ph-sub">Most knockouts this season</span><span class="host-note" id="koHostNote"></span></div>
+    <div class="ko-add-row" id="koAddRow"></div>
+    <div class="ko-grid" id="koList"></div>
+  </section>
+</div>
+
+<input type="file" id="logoInput" accept="image/png,image/jpeg,image/jpg" class="hidden">
+
+<!-- modals -->
+<div class="overlay" id="overlay">
+  <div class="modal" id="modalBox"></div>
+</div>
+<div class="overlay" id="tradeOverlay">
+  <div class="modal trade-modal" id="tradeBox"></div>
+</div>
+<div class="toast" id="toast"><div class="ic"></div><div class="msg"></div></div>
+
+<script>
+const POKEMON = [{"name":"Mega Charizard Y","types":["Fire","Flying"],"cost":20,"spriteId":10035,"stats":{"hp":78,"atk":104,"def":78,"spa":159,"spd":115,"spe":100},"abilities":["Drought"],"customMega":false},{"name":"Mega Floette","types":["Fairy"],"cost":20,"spriteId":10296,"stats":{"hp":74,"atk":85,"def":87,"spa":155,"spd":148,"spe":102},"abilities":["Flower Veil","Symbiosis"],"customMega":false},{"name":"Mega Gengar","types":["Ghost","Poison"],"cost":20,"spriteId":10038,"stats":{"hp":60,"atk":65,"def":80,"spa":170,"spd":95,"spe":130},"abilities":["Shadow Tag"],"customMega":false},{"name":"Mega Salamence","types":["Dragon","Flying"],"cost":20,"spriteId":10089,"stats":{"hp":95,"atk":145,"def":130,"spa":120,"spd":90,"spe":120},"abilities":["Aerilate"],"customMega":false},{"name":"Mega Froslass","types":["Ice","Ghost"],"cost":19,"spriteId":10285,"stats":{"hp":70,"atk":80,"def":70,"spa":140,"spd":100,"spe":120},"abilities":["Snow Cloak","Cursed Body"],"customMega":false},{"name":"Mega Gardevoir","types":["Psychic","Fairy"],"cost":19,"spriteId":10051,"stats":{"hp":68,"atk":85,"def":65,"spa":165,"spd":135,"spe":100},"abilities":["Pixilate"],"customMega":false},{"name":"Salamence","types":["Dragon","Flying"],"cost":19,"spriteId":373,"stats":{"hp":95,"atk":135,"def":80,"spa":110,"spd":80,"spe":100},"abilities":["Intimidate","Moxie"],"customMega":false},{"name":"Sneasler","types":["Fighting","Poison"],"cost":19,"spriteId":903,"stats":{"hp":80,"atk":130,"def":60,"spa":40,"spd":80,"spe":120},"abilities":["Pressure","Unburden","Poison Touch"],"customMega":false},{"name":"Whimsicott","types":["Grass","Fairy"],"cost":19,"spriteId":547,"stats":{"hp":60,"atk":67,"def":85,"spa":77,"spd":75,"spe":116},"abilities":["Prankster","Infiltrator","Chlorophyll"],"customMega":false},{"name":"Archaludon","types":["Steel","Dragon"],"cost":18,"spriteId":1018,"stats":{"hp":90,"atk":105,"def":130,"spa":125,"spd":65,"spe":85},"abilities":["Stamina","Sturdy","Stalwart"],"customMega":false},{"name":"Basculegion-Male","types":["Water","Ghost"],"cost":18,"spriteId":902,"stats":{"hp":120,"atk":112,"def":65,"spa":80,"spd":75,"spe":78},"abilities":["Swift Swim","Adaptability","Mold Breaker"],"customMega":false},{"name":"Garchomp","types":["Dragon","Ground"],"cost":18,"spriteId":445,"stats":{"hp":108,"atk":130,"def":95,"spa":80,"spd":85,"spe":102},"abilities":["Sand Veil","Rough Skin"],"customMega":false},{"name":"Incineroar","types":["Fire","Dark"],"cost":18,"spriteId":727,"stats":{"hp":95,"atk":115,"def":90,"spa":80,"spd":90,"spe":60},"abilities":["Blaze","Intimidate"],"customMega":false},{"name":"Indeedee F","types":["Psychic","Normal"],"cost":18,"spriteId":10186,"stats":{"hp":70,"atk":55,"def":65,"spa":95,"spd":105,"spe":85},"abilities":["Own Tempo","Synchronize","Psychic Surge"],"customMega":false},{"name":"Kingambit","types":["Dark","Steel"],"cost":18,"spriteId":983,"stats":{"hp":100,"atk":135,"def":120,"spa":60,"spd":85,"spe":50},"abilities":["Defiant","Supreme Overlord","Pressure"],"customMega":false},{"name":"Mega Swampert","types":["Water","Ground"],"cost":18,"spriteId":10064,"stats":{"hp":100,"atk":150,"def":110,"spa":95,"spd":110,"spe":70},"abilities":["Swift Swim"],"customMega":false},{"name":"Rillaboom","types":["Grass"],"cost":18,"spriteId":812,"stats":{"hp":100,"atk":125,"def":90,"spa":60,"spd":70,"spe":85},"abilities":["Overgrow","Grassy Surge"],"customMega":false},{"name":"Sinistcha","types":["Grass","Ghost"],"cost":18,"spriteId":1013,"stats":{"hp":71,"atk":60,"def":106,"spa":121,"spd":80,"spe":70},"abilities":["Hospitality","Heatproof"],"customMega":false},{"name":"Aerodactyl","types":["Rock","Flying"],"cost":17,"spriteId":142,"stats":{"hp":80,"atk":105,"def":65,"spa":60,"spd":75,"spe":130},"abilities":["Rock Head","Pressure","Unnerve"],"customMega":false},{"name":"Indeedee M","types":["Psychic","Normal"],"cost":17,"spriteId":876,"stats":{"hp":60,"atk":65,"def":55,"spa":105,"spd":95,"spe":95},"abilities":["Inner Focus","Synchronize","Psychic Surge"],"customMega":false},{"name":"Mega Aerodactyl","types":["Rock","Flying"],"cost":17,"spriteId":10042,"stats":{"hp":80,"atk":135,"def":85,"spa":70,"spd":95,"spe":150},"abilities":["Tough Claws"],"customMega":false},{"name":"Mega Baxcalibur","types":["Dragon","Ice"],"cost":17,"spriteId":10325,"stats":{"hp":115,"atk":175,"def":117,"spa":105,"spd":101,"spe":87},"abilities":["Thermal Exchange"],"customMega":true},{"name":"Mega Delphox","types":["Fire","Psychic"],"cost":17,"spriteId":10293,"stats":{"hp":75,"atk":69,"def":72,"spa":159,"spd":125,"spe":134},"abilities":["Blaze","Magician"],"customMega":false},{"name":"Mega Garchomp Z","types":["Dragon"],"cost":17,"spriteId":10309,"stats":{"hp":108,"atk":130,"def":85,"spa":141,"spd":85,"spe":151},"abilities":["Levitate"],"customMega":true},{"name":"Mega Kangaskhan","types":["Normal"],"cost":17,"spriteId":10039,"stats":{"hp":105,"atk":125,"def":100,"spa":60,"spd":100,"spe":100},"abilities":["Parental Bond"],"customMega":false},{"name":"Mega Metagross","types":["Steel","Psychic"],"cost":17,"spriteId":10076,"stats":{"hp":80,"atk":145,"def":150,"spa":105,"spd":110,"spe":110},"abilities":["Tough Claws"],"customMega":false},{"name":"Mega Staraptor","types":["Fighting","Flying"],"cost":17,"spriteId":10308,"stats":{"hp":85,"atk":140,"def":100,"spa":60,"spd":90,"spe":110},"abilities":["Contrary"],"customMega":true},{"name":"Mega Tyranitar","types":["Rock","Dark"],"cost":17,"spriteId":10049,"stats":{"hp":100,"atk":164,"def":150,"spa":95,"spd":120,"spe":71},"abilities":["Sand Stream"],"customMega":false},{"name":"Aegislash","types":["Steel","Ghost"],"cost":16,"spriteId":681,"stats":{"hp":60,"atk":50,"def":140,"spa":50,"spd":140,"spe":60},"abilities":["Stance Change"],"customMega":false},{"name":"Baxcalibur","types":["Dragon","Ice"],"cost":16,"spriteId":998,"stats":{"hp":115,"atk":145,"def":92,"spa":75,"spd":86,"spe":87},"abilities":["Thermal Exchange","Ice Body"],"customMega":false},{"name":"Dragapult","types":["Dragon","Ghost"],"cost":16,"spriteId":887,"stats":{"hp":88,"atk":120,"def":75,"spa":100,"spd":75,"spe":142},"abilities":["Clear Body","Infiltrator","Cursed Body"],"customMega":false},{"name":"Dragonite","types":["Dragon","Flying"],"cost":16,"spriteId":149,"stats":{"hp":91,"atk":134,"def":95,"spa":100,"spd":100,"spe":80},"abilities":["Inner Focus","Multiscale"],"customMega":false},{"name":"Farigiraf","types":["Normal","Psychic"],"cost":16,"spriteId":981,"stats":{"hp":120,"atk":90,"def":70,"spa":110,"spd":70,"spe":60},"abilities":["Cud Chew","Armor Tail","Sap Sipper"],"customMega":false},{"name":"Gholdengo","types":["Steel","Ghost"],"cost":16,"spriteId":1000,"stats":{"hp":87,"atk":60,"def":95,"spa":133,"spd":91,"spe":84},"abilities":["Good as Gold"],"customMega":false},{"name":"Maushold","types":["Normal"],"cost":16,"spriteId":925,"stats":{"hp":74,"atk":75,"def":70,"spa":65,"spd":75,"spe":111},"abilities":["Friend Guard","Cheek Pouch","Technician"],"customMega":false},{"name":"Mega Blastoise","types":["Water"],"cost":16,"spriteId":10036,"stats":{"hp":79,"atk":103,"def":120,"spa":135,"spd":115,"spe":78},"abilities":["Mega Launcher"],"customMega":false},{"name":"Mega Golisopod","types":["Bug","Steel"],"cost":16,"spriteId":10316,"stats":{"hp":75,"atk":150,"def":175,"spa":70,"spd":120,"spe":40},"abilities":["Tough Claws"],"customMega":true},{"name":"Mega Lopunny","types":["Normal","Fighting"],"cost":16,"spriteId":10088,"stats":{"hp":65,"atk":136,"def":94,"spa":54,"spd":96,"spe":135},"abilities":["Scrappy"],"customMega":false},{"name":"Mega Lucario Z","types":["Fighting","Steel"],"cost":16,"spriteId":10310,"stats":{"hp":70,"atk":100,"def":70,"spa":164,"spd":70,"spe":151},"abilities":["Aura Guard"],"customMega":true},{"name":"Mega Raichu Y","types":["Electric"],"cost":16,"spriteId":10305,"stats":{"hp":60,"atk":100,"def":55,"spa":160,"spd":80,"spe":130},"abilities":["No Guard"],"customMega":true},{"name":"Pelipper","types":["Water","Flying"],"cost":16,"spriteId":279,"stats":{"hp":60,"atk":50,"def":100,"spa":95,"spd":70,"spe":65},"abilities":["Keen Eye","Drizzle","Rain Dish"],"customMega":false},{"name":"Tyranitar","types":["Rock","Dark"],"cost":16,"spriteId":248,"stats":{"hp":100,"atk":134,"def":110,"spa":95,"spd":100,"spe":61},"abilities":["Sand Stream","Unnerve"],"customMega":false},{"name":"Hisuian Arcanine","types":["Fire","Rock"],"cost":15,"spriteId":10230,"stats":{"hp":95,"atk":115,"def":80,"spa":95,"spd":80,"spe":90},"abilities":["Intimidate","Flash Fire","Rock Head"],"customMega":false},{"name":"Mega Absol Z","types":["Dark","Ghost"],"cost":15,"spriteId":10307,"stats":{"hp":65,"atk":154,"def":60,"spa":75,"spd":60,"spe":151},"abilities":["Sharpness"],"customMega":true},{"name":"Mega Dragonite","types":["Dragon","Flying"],"cost":15,"spriteId":10281,"stats":{"hp":91,"atk":124,"def":115,"spa":145,"spd":125,"spe":100},"abilities":["Inner Focus","Multiscale"],"customMega":false},{"name":"Mega Glimmora","types":["Rock","Poison"],"cost":15,"spriteId":10321,"stats":{"hp":83,"atk":90,"def":105,"spa":150,"spd":96,"spe":101},"abilities":["Toxic Debris","Corrosion"],"customMega":false},{"name":"Mega Lucario","types":["Fighting","Steel"],"cost":15,"spriteId":10059,"stats":{"hp":70,"atk":145,"def":88,"spa":140,"spd":70,"spe":112},"abilities":["Adaptability"],"customMega":false},{"name":"Mega Scovillain","types":["Grass","Fire"],"cost":15,"spriteId":10320,"stats":{"hp":65,"atk":138,"def":85,"spa":138,"spd":85,"spe":75},"abilities":["Chlorophyll","Insomnia","Moody"],"customMega":false},{"name":"Milotic","types":["Water"],"cost":15,"spriteId":350,"stats":{"hp":95,"atk":60,"def":79,"spa":100,"spd":125,"spe":81},"abilities":["Marvel Scale","Competitive","Cute Charm"],"customMega":false},{"name":"Sylveon","types":["Fairy"],"cost":15,"spriteId":700,"stats":{"hp":95,"atk":65,"def":65,"spa":110,"spd":130,"spe":60},"abilities":["Cute Charm","Pixilate"],"customMega":false},{"name":"Talonflame","types":["Fire","Flying"],"cost":15,"spriteId":663,"stats":{"hp":78,"atk":81,"def":71,"spa":74,"spd":69,"spe":126},"abilities":["Flame Body","Gale Wings"],"customMega":false},{"name":"Torkoal","types":["Fire"],"cost":15,"spriteId":324,"stats":{"hp":70,"atk":85,"def":140,"spa":85,"spd":70,"spe":20},"abilities":["White Smoke","Drought","Shell Armor"],"customMega":false},{"name":"Volcarona","types":["Bug","Fire"],"cost":15,"spriteId":637,"stats":{"hp":85,"atk":60,"def":65,"spa":135,"spd":105,"spe":100},"abilities":["Flame Body","Swarm"],"customMega":false},{"name":"Alolan Ninetales","types":["Ice","Fairy"],"cost":14,"spriteId":10104,"stats":{"hp":73,"atk":67,"def":75,"spa":81,"spd":100,"spe":109},"abilities":["Snow Cloak","Snow Warning"],"customMega":false},{"name":"Arcanine","types":["Fire"],"cost":14,"spriteId":59,"stats":{"hp":90,"atk":110,"def":80,"spa":100,"spd":80,"spe":95},"abilities":["Intimidate","Flash Fire","Justified"],"customMega":false},{"name":"Clefable","types":["Fairy"],"cost":14,"spriteId":36,"stats":{"hp":95,"atk":70,"def":73,"spa":95,"spd":90,"spe":60},"abilities":["Cute Charm","Magic Guard","Unaware"],"customMega":false},{"name":"Corviknight","types":["Flying","Steel"],"cost":14,"spriteId":823,"stats":{"hp":98,"atk":87,"def":105,"spa":53,"spd":85,"spe":67},"abilities":["Pressure","Unnerve","Mirror Armor"],"customMega":false},{"name":"Grimmsnarl","types":["Dark","Fairy"],"cost":14,"spriteId":861,"stats":{"hp":95,"atk":120,"def":65,"spa":95,"spd":75,"spe":60},"abilities":["Prankster","Frisk","Pickpocket"],"customMega":false},{"name":"Hydreigon","types":["Dark","Dragon"],"cost":14,"spriteId":635,"stats":{"hp":92,"atk":105,"def":90,"spa":125,"spd":90,"spe":98},"abilities":["Levitate"],"customMega":false},{"name":"Mega Charizard X","types":["Fire","Dragon"],"cost":14,"spriteId":10034,"stats":{"hp":78,"atk":130,"def":111,"spa":130,"spd":85,"spe":100},"abilities":["Tough Claws"],"customMega":false},{"name":"Mega Garchomp","types":["Dragon","Ground"],"cost":14,"spriteId":10058,"stats":{"hp":108,"atk":170,"def":115,"spa":120,"spd":95,"spe":92},"abilities":["Sand Force"],"customMega":false},{"name":"Mega Gyarados","types":["Water","Dark"],"cost":14,"spriteId":10041,"stats":{"hp":95,"atk":155,"def":109,"spa":70,"spd":130,"spe":81},"abilities":["Mold Breaker"],"customMega":false},{"name":"Mega Mawile","types":["Steel","Fairy"],"cost":14,"spriteId":10052,"stats":{"hp":50,"atk":105,"def":125,"spa":55,"spd":95,"spe":50},"abilities":["Huge Power"],"customMega":false},{"name":"Mega Scizor","types":["Bug","Steel"],"cost":14,"spriteId":10046,"stats":{"hp":70,"atk":150,"def":140,"spa":65,"spd":100,"spe":75},"abilities":["Technician"],"customMega":false},{"name":"Mega Starmie","types":["Water","Psychic"],"cost":14,"spriteId":10280,"stats":{"hp":60,"atk":100,"def":105,"spa":130,"spd":105,"spe":120},"abilities":["Illuminate","Natural Cure","Analytic"],"customMega":false},{"name":"Mega Venusaur","types":["Grass","Poison"],"cost":14,"spriteId":10033,"stats":{"hp":80,"atk":100,"def":123,"spa":122,"spd":120,"spe":80},"abilities":["Thick Fat"],"customMega":false},{"name":"Metagross","types":["Steel","Psychic"],"cost":14,"spriteId":376,"stats":{"hp":80,"atk":135,"def":130,"spa":95,"spd":90,"spe":70},"abilities":["Clear Body","Light Metal"],"customMega":false},{"name":"Pawmot","types":["Electric","Fighting"],"cost":14,"spriteId":923,"stats":{"hp":70,"atk":115,"def":70,"spa":70,"spd":60,"spe":105},"abilities":["Volt Absorb","Natural Cure","Iron Fist"],"customMega":false},{"name":"Primarina","types":["Water","Fairy"],"cost":14,"spriteId":730,"stats":{"hp":80,"atk":74,"def":74,"spa":126,"spd":116,"spe":60},"abilities":["Torrent","Liquid Voice"],"customMega":false},{"name":"Rotom-Wash","types":["Electric","Water"],"cost":14,"spriteId":10009,"stats":{"hp":50,"atk":65,"def":107,"spa":105,"spd":107,"spe":86},"abilities":["Levitate"],"customMega":false},{"name":"Blaziken","types":["Fire","Fighting"],"cost":13,"spriteId":257,"stats":{"hp":80,"atk":120,"def":70,"spa":110,"spd":70,"spe":80},"abilities":["Blaze","Speed Boost"],"customMega":false},{"name":"Excadrill","types":["Ground","Steel"],"cost":13,"spriteId":530,"stats":{"hp":110,"atk":135,"def":60,"spa":50,"spd":65,"spe":88},"abilities":["Sand Rush","Sand Force","Mold Breaker"],"customMega":false},{"name":"Kommo-o","types":["Dragon","Fighting"],"cost":13,"spriteId":784,"stats":{"hp":75,"atk":110,"def":125,"spa":100,"spd":105,"spe":85},"abilities":["Bulletproof","Soundproof","Overcoat"],"customMega":false},{"name":"Mega Alakazam","types":["Psychic"],"cost":13,"spriteId":10037,"stats":{"hp":55,"atk":50,"def":65,"spa":175,"spd":105,"spe":150},"abilities":["Trace"],"customMega":false},{"name":"Mega Blaziken","types":["Fire","Fighting"],"cost":13,"spriteId":10050,"stats":{"hp":80,"atk":160,"def":80,"spa":130,"spd":80,"spe":100},"abilities":["Speed Boost"],"customMega":false},{"name":"Mega Meganium","types":["Grass","Fairy"],"cost":13,"spriteId":10282,"stats":{"hp":80,"atk":92,"def":115,"spa":143,"spd":115,"spe":80},"abilities":["Overgrow","Leaf Guard"],"customMega":false},{"name":"Mega Meowstic","types":["Psychic"],"cost":13,"spriteId":10314,"stats":{"hp":74,"atk":48,"def":76,"spa":143,"spd":101,"spe":124},"abilities":["Keen Eye","Infiltrator","Prankster"],"customMega":false},{"name":"Mega Raichu X","types":["Electric"],"cost":13,"spriteId":10304,"stats":{"hp":60,"atk":135,"def":95,"spa":90,"spd":95,"spe":110},"abilities":["Electric Surge"],"customMega":true},{"name":"Politoed","types":["Water"],"cost":13,"spriteId":186,"stats":{"hp":90,"atk":75,"def":75,"spa":90,"spd":100,"spe":70},"abilities":["Water Absorb","Damp","Drizzle"],"customMega":false},{"name":"Swampert","types":["Water","Ground"],"cost":13,"spriteId":260,"stats":{"hp":100,"atk":110,"def":90,"spa":85,"spd":90,"spe":60},"abilities":["Torrent","Damp"],"customMega":false},{"name":"Venusaur","types":["Grass","Poison"],"cost":13,"spriteId":3,"stats":{"hp":80,"atk":82,"def":83,"spa":100,"spd":100,"spe":80},"abilities":["Overgrow","Chlorophyll"],"customMega":false},{"name":"Annihilape","types":["Fighting","Ghost"],"cost":12,"spriteId":979,"stats":{"hp":110,"atk":115,"def":80,"spa":50,"spd":90,"spe":90},"abilities":["Vital Spirit","Inner Focus","Defiant"],"customMega":false},{"name":"Gardevoir","types":["Psychic","Fairy"],"cost":12,"spriteId":282,"stats":{"hp":68,"atk":65,"def":65,"spa":125,"spd":115,"spe":80},"abilities":["Synchronize","Trace","Telepathy"],"customMega":false},{"name":"Glimmora","types":["Rock","Poison"],"cost":12,"spriteId":970,"stats":{"hp":83,"atk":55,"def":90,"spa":130,"spd":81,"spe":86},"abilities":["Toxic Debris","Corrosion"],"customMega":false},{"name":"Gyarados","types":["Water","Flying"],"cost":12,"spriteId":130,"stats":{"hp":95,"atk":125,"def":79,"spa":60,"spd":100,"spe":81},"abilities":["Intimidate","Moxie"],"customMega":false},{"name":"Mamoswine","types":["Ice","Ground"],"cost":12,"spriteId":473,"stats":{"hp":110,"atk":130,"def":80,"spa":70,"spd":60,"spe":80},"abilities":["Oblivious","Snow Cloak","Thick Fat"],"customMega":false},{"name":"Mega Clefable","types":["Fairy","Flying"],"cost":12,"spriteId":10278,"stats":{"hp":95,"atk":80,"def":93,"spa":135,"spd":110,"spe":70},"abilities":["Cute Charm","Magic Guard","Unaware"],"customMega":false},{"name":"Mega Excadrill","types":["Ground","Steel"],"cost":12,"spriteId":10287,"stats":{"hp":110,"atk":165,"def":100,"spa":65,"spd":65,"spe":103},"abilities":["Sand Rush","Sand Force","Mold Breaker"],"customMega":false},{"name":"Mega Gallade","types":["Psychic","Fighting"],"cost":12,"spriteId":10068,"stats":{"hp":68,"atk":165,"def":95,"spa":65,"spd":115,"spe":110},"abilities":["Inner Focus"],"customMega":false},{"name":"Mega Greninja","types":["Water","Dark"],"cost":12,"spriteId":10294,"stats":{"hp":72,"atk":125,"def":77,"spa":133,"spd":81,"spe":142},"abilities":["Torrent","Protean","Battle Bond"],"customMega":false},{"name":"Mega Medicham","types":["Fighting","Psychic"],"cost":12,"spriteId":10054,"stats":{"hp":60,"atk":100,"def":85,"spa":80,"spd":85,"spe":100},"abilities":["Pure Power"],"customMega":false},{"name":"Mega Pyroar","types":["Fire","Normal"],"cost":12,"spriteId":10295,"stats":{"hp":86,"atk":88,"def":92,"spa":129,"spd":86,"spe":126},"abilities":["Fire Mane"],"customMega":true},{"name":"Meowscarada","types":["Grass","Dark"],"cost":12,"spriteId":908,"stats":{"hp":76,"atk":110,"def":70,"spa":81,"spd":70,"spe":123},"abilities":["Overgrow","Protean"],"customMega":false},{"name":"Rotom-Heat","types":["Electric","Fire"],"cost":12,"spriteId":10008,"stats":{"hp":50,"atk":65,"def":107,"spa":105,"spd":107,"spe":86},"abilities":["Levitate"],"customMega":false},{"name":"Araquanid","types":["Water","Bug"],"cost":11,"spriteId":752,"stats":{"hp":68,"atk":70,"def":92,"spa":50,"spd":132,"spe":42},"abilities":["Water Bubble","Water Absorb"],"customMega":false},{"name":"Azumarill","types":["Water","Fairy"],"cost":11,"spriteId":184,"stats":{"hp":100,"atk":50,"def":80,"spa":60,"spd":80,"spe":50},"abilities":["Thick Fat","Huge Power","Sap Sipper"],"customMega":false},{"name":"Basculegion-Female","types":["Water","Ghost"],"cost":11,"spriteId":10248,"stats":{"hp":120,"atk":92,"def":65,"spa":100,"spd":75,"spe":78},"abilities":["Swift Swim","Adaptability","Mold Breaker"],"customMega":false},{"name":"Floette-Eternal","types":["Fairy"],"cost":11,"spriteId":10061,"stats":{"hp":74,"atk":65,"def":67,"spa":125,"spd":128,"spe":92},"abilities":["Flower Veil","Symbiosis"],"customMega":false},{"name":"Golisopod","types":["Bug","Water"],"cost":11,"spriteId":768,"stats":{"hp":75,"atk":125,"def":140,"spa":60,"spd":90,"spe":40},"abilities":["Emergency Exit"],"customMega":false},{"name":"Hatterene","types":["Psychic","Fairy"],"cost":11,"spriteId":858,"stats":{"hp":57,"atk":90,"def":95,"spa":136,"spd":103,"spe":29},"abilities":["Healer","Anticipation","Magic Bounce"],"customMega":false},{"name":"Mega Skarmory","types":["Steel","Flying"],"cost":11,"spriteId":10284,"stats":{"hp":65,"atk":140,"def":110,"spa":40,"spd":100,"spe":110},"abilities":["Keen Eye","Sturdy","Weak Armor"],"customMega":false},{"name":"Meowstic-Male","types":["Psychic"],"cost":11,"spriteId":678,"stats":{"hp":74,"atk":48,"def":76,"spa":83,"spd":81,"spe":104},"abilities":["Keen Eye","Infiltrator","Prankster"],"customMega":false},{"name":"Mimikyu","types":["Ghost","Fairy"],"cost":11,"spriteId":778,"stats":{"hp":55,"atk":90,"def":80,"spa":50,"spd":105,"spe":96},"abilities":["Disguise"],"customMega":false},{"name":"Ninetales","types":["Fire"],"cost":11,"spriteId":38,"stats":{"hp":73,"atk":76,"def":75,"spa":81,"spd":100,"spe":100},"abilities":["Flash Fire","Drought"],"customMega":false},{"name":"Palafin","types":["Water"],"cost":11,"spriteId":964,"stats":{"hp":100,"atk":70,"def":72,"spa":53,"spd":62,"spe":100},"abilities":["Zero to Hero"],"customMega":false},{"name":"Rotom-Mow","types":["Electric","Grass"],"cost":11,"spriteId":10012,"stats":{"hp":50,"atk":65,"def":107,"spa":105,"spd":107,"spe":86},"abilities":["Levitate"],"customMega":false},{"name":"Sableye","types":["Dark","Ghost"],"cost":11,"spriteId":302,"stats":{"hp":50,"atk":75,"def":75,"spa":65,"spd":65,"spe":50},"abilities":["Keen Eye","Stall","Prankster"],"customMega":false},{"name":"Tinkaton","types":["Fairy","Steel"],"cost":11,"spriteId":959,"stats":{"hp":85,"atk":75,"def":77,"spa":70,"spd":105,"spe":94},"abilities":["Mold Breaker","Own Tempo","Pickpocket"],"customMega":false},{"name":"Armarouge","types":["Fire","Psychic"],"cost":10,"spriteId":936,"stats":{"hp":85,"atk":60,"def":100,"spa":125,"spd":80,"spe":75},"abilities":["Flash Fire","Weak Armor"],"customMega":false},{"name":"Hisuian Zoroark","types":["Normal","Ghost"],"cost":10,"spriteId":10239,"stats":{"hp":55,"atk":100,"def":60,"spa":125,"spd":60,"spe":110},"abilities":["Illusion"],"customMega":false},{"name":"Klefki","types":["Steel","Fairy"],"cost":10,"spriteId":707,"stats":{"hp":57,"atk":80,"def":91,"spa":80,"spd":87,"spe":75},"abilities":["Prankster","Magician"],"customMega":false},{"name":"Krookodile","types":["Ground","Dark"],"cost":10,"spriteId":553,"stats":{"hp":95,"atk":117,"def":80,"spa":65,"spd":70,"spe":92},"abilities":["Intimidate","Moxie","Anger Point"],"customMega":false},{"name":"Liepard","types":["Dark"],"cost":10,"spriteId":510,"stats":{"hp":64,"atk":88,"def":50,"spa":88,"spd":50,"spe":106},"abilities":["Limber","Unburden","Prankster"],"customMega":false},{"name":"Mega Camerupt","types":["Fire","Ground"],"cost":10,"spriteId":10087,"stats":{"hp":70,"atk":120,"def":100,"spa":145,"spd":105,"spe":20},"abilities":["Sheer Force"],"customMega":false},{"name":"Mega Eelektross","types":["Electric"],"cost":10,"spriteId":10290,"stats":{"hp":85,"atk":145,"def":80,"spa":135,"spd":90,"spe":80},"abilities":["Eelevate"],"customMega":true},{"name":"Mega Golurk","types":["Ground","Ghost"],"cost":10,"spriteId":10313,"stats":{"hp":89,"atk":159,"def":105,"spa":70,"spd":105,"spe":55},"abilities":["Iron Fist","Klutz","No Guard"],"customMega":false},{"name":"Mega Hawlucha","types":["Fighting","Flying"],"cost":10,"spriteId":10300,"stats":{"hp":78,"atk":137,"def":100,"spa":74,"spd":93,"spe":118},"abilities":["Limber","Unburden","Mold Breaker"],"customMega":false},{"name":"Mega Manectric","types":["Electric"],"cost":10,"spriteId":10055,"stats":{"hp":70,"atk":75,"def":80,"spa":135,"spd":80,"spe":135},"abilities":["Intimidate"],"customMega":false},{"name":"Oranguru","types":["Normal","Psychic"],"cost":10,"spriteId":765,"stats":{"hp":90,"atk":60,"def":80,"spa":90,"spd":110,"spe":60},"abilities":["Inner Focus","Telepathy","Symbiosis"],"customMega":false},{"name":"Paldean Tauros Aqua","types":["Fighting","Water"],"cost":10,"spriteId":10252,"stats":{"hp":75,"atk":110,"def":105,"spa":30,"spd":70,"spe":100},"abilities":["Intimidate","Anger Point","Cud Chew"],"customMega":false},{"name":"Raichu","types":["Electric"],"cost":10,"spriteId":26,"stats":{"hp":60,"atk":90,"def":55,"spa":90,"spd":80,"spe":110},"abilities":["Static","Lightning Rod"],"customMega":false},{"name":"Salazzle","types":["Poison","Fire"],"cost":10,"spriteId":758,"stats":{"hp":68,"atk":64,"def":60,"spa":111,"spd":60,"spe":117},"abilities":["Corrosion","Oblivious"],"customMega":false},{"name":"Scizor","types":["Bug","Steel"],"cost":10,"spriteId":212,"stats":{"hp":70,"atk":130,"def":100,"spa":55,"spd":80,"spe":65},"abilities":["Swarm","Technician","Light Metal"],"customMega":false},{"name":"Vivillon","types":["Bug","Flying"],"cost":10,"spriteId":666,"stats":{"hp":80,"atk":52,"def":50,"spa":90,"spd":50,"spe":89},"abilities":["Shield Dust","Compound Eyes","Friend Guard"],"customMega":false},{"name":"Blastoise","types":["Water"],"cost":9,"spriteId":9,"stats":{"hp":79,"atk":83,"def":100,"spa":85,"spd":105,"spe":78},"abilities":["Torrent","Rain Dish"],"customMega":false},{"name":"Ceruledge","types":["Fire","Ghost"],"cost":9,"spriteId":937,"stats":{"hp":75,"atk":125,"def":80,"spa":60,"spd":100,"spe":85},"abilities":["Flash Fire","Weak Armor"],"customMega":false},{"name":"Espathra","types":["Psychic"],"cost":9,"spriteId":956,"stats":{"hp":95,"atk":60,"def":60,"spa":101,"spd":60,"spe":105},"abilities":["Opportunist","Frisk","Speed Boost"],"customMega":false},{"name":"Gallade","types":["Psychic","Fighting"],"cost":9,"spriteId":475,"stats":{"hp":68,"atk":125,"def":65,"spa":65,"spd":115,"spe":80},"abilities":["Steadfast","Sharpness","Justified"],"customMega":false},{"name":"Hisuian Typhlosion","types":["Fire","Ghost"],"cost":9,"spriteId":10233,"stats":{"hp":73,"atk":84,"def":78,"spa":119,"spd":85,"spe":95},"abilities":["Blaze","Frisk"],"customMega":false},{"name":"Kangaskhan","types":["Normal"],"cost":9,"spriteId":115,"stats":{"hp":105,"atk":95,"def":80,"spa":40,"spd":80,"spe":90},"abilities":["Early Bird","Scrappy","Inner Focus"],"customMega":false},{"name":"Mega Altaria","types":["Dragon","Fairy"],"cost":9,"spriteId":10067,"stats":{"hp":75,"atk":110,"def":110,"spa":110,"spd":105,"spe":80},"abilities":["Pixilate"],"customMega":false},{"name":"Mega Chandelure","types":["Ghost","Fire"],"cost":9,"spriteId":10291,"stats":{"hp":60,"atk":75,"def":110,"spa":175,"spd":110,"spe":90},"abilities":["Flash Fire","Flame Body","Infiltrator"],"customMega":false},{"name":"Mega Chimecho","types":["Psychic","Steel"],"cost":9,"spriteId":10306,"stats":{"hp":75,"atk":50,"def":110,"spa":135,"spd":120,"spe":65},"abilities":["Levitate"],"customMega":false},{"name":"Mega Sableye","types":["Dark","Ghost"],"cost":9,"spriteId":10066,"stats":{"hp":50,"atk":85,"def":125,"spa":85,"spd":115,"spe":20},"abilities":["Magic Bounce"],"customMega":false},{"name":"Mega Scrafty","types":["Dark","Fighting"],"cost":9,"spriteId":10289,"stats":{"hp":65,"atk":130,"def":135,"spa":55,"spd":135,"spe":68},"abilities":["Intimidate"],"customMega":true},{"name":"Noivern","types":["Flying","Dragon"],"cost":9,"spriteId":715,"stats":{"hp":85,"atk":70,"def":80,"spa":97,"spd":80,"spe":123},"abilities":["Frisk","Infiltrator","Telepathy"],"customMega":false},{"name":"Paldean Tauros Blaze","types":["Fighting","Fire"],"cost":9,"spriteId":10251,"stats":{"hp":75,"atk":110,"def":105,"spa":30,"spd":70,"spe":100},"abilities":["Intimidate","Anger Point","Cud Chew"],"customMega":false},{"name":"Reuniclus","types":["Psychic"],"cost":9,"spriteId":579,"stats":{"hp":110,"atk":65,"def":75,"spa":125,"spd":85,"spe":30},"abilities":["Overcoat","Magic Guard","Regenerator"],"customMega":false},{"name":"Rhyperior","types":["Ground","Rock"],"cost":9,"spriteId":464,"stats":{"hp":115,"atk":140,"def":130,"spa":55,"spd":55,"spe":40},"abilities":["Lightning Rod","Solid Rock","Reckless"],"customMega":false},{"name":"Staraptor","types":["Normal","Flying"],"cost":9,"spriteId":398,"stats":{"hp":85,"atk":120,"def":70,"spa":50,"spd":60,"spe":100},"abilities":["Intimidate","Reckless"],"customMega":false},{"name":"Weavile","types":["Dark","Ice"],"cost":9,"spriteId":461,"stats":{"hp":70,"atk":120,"def":65,"spa":45,"spd":85,"spe":125},"abilities":["Pressure","Pickpocket"],"customMega":false},{"name":"Arboliva","types":["Grass","Normal"],"cost":8,"spriteId":930,"stats":{"hp":78,"atk":69,"def":90,"spa":125,"spd":109,"spe":39},"abilities":["Seed Sower","Harvest"],"customMega":false},{"name":"Cinderace","types":["Fire"],"cost":8,"spriteId":815,"stats":{"hp":80,"atk":116,"def":75,"spa":65,"spd":75,"spe":119},"abilities":["Blaze","Libero"],"customMega":false},{"name":"Conkeldurr","types":["Fighting"],"cost":8,"spriteId":534,"stats":{"hp":105,"atk":140,"def":95,"spa":55,"spd":65,"spe":45},"abilities":["Guts","Sheer Force","Iron Fist"],"customMega":false},{"name":"Espeon","types":["Psychic"],"cost":8,"spriteId":196,"stats":{"hp":65,"atk":65,"def":60,"spa":130,"spd":95,"spe":110},"abilities":["Synchronize","Magic Bounce"],"customMega":false},{"name":"Gengar","types":["Ghost","Poison"],"cost":8,"spriteId":94,"stats":{"hp":60,"atk":65,"def":60,"spa":130,"spd":75,"spe":110},"abilities":["Cursed Body"],"customMega":false},{"name":"Hawlucha","types":["Fighting","Flying"],"cost":8,"spriteId":701,"stats":{"hp":78,"atk":92,"def":75,"spa":74,"spd":63,"spe":118},"abilities":["Limber","Unburden","Mold Breaker"],"customMega":false},{"name":"Mega Aggron","types":["Steel"],"cost":8,"spriteId":10053,"stats":{"hp":70,"atk":140,"def":230,"spa":60,"spd":80,"spe":50},"abilities":["Filter"],"customMega":false},{"name":"Mega Barbaracle","types":["Rock","Fighting"],"cost":8,"spriteId":10298,"stats":{"hp":72,"atk":140,"def":130,"spa":64,"spd":106,"spe":88},"abilities":["Tough Claws"],"customMega":true},{"name":"Mega Crabominable","types":["Fighting","Ice"],"cost":8,"spriteId":10315,"stats":{"hp":97,"atk":157,"def":122,"spa":62,"spd":107,"spe":33},"abilities":["Hyper Cutter","Iron Fist","Anger Point"],"customMega":false},{"name":"Mega Drampa","types":["Normal","Dragon"],"cost":8,"spriteId":10302,"stats":{"hp":78,"atk":85,"def":110,"spa":160,"spd":116,"spe":36},"abilities":["Berserk","Sap Sipper","Cloud Nine"],"customMega":false},{"name":"Mega Emboar","types":["Fire","Fighting"],"cost":8,"spriteId":10286,"stats":{"hp":110,"atk":148,"def":75,"spa":110,"spd":110,"spe":75},"abilities":["Blaze","Reckless"],"customMega":false},{"name":"Mega Falinks","types":["Fighting"],"cost":8,"spriteId":10303,"stats":{"hp":65,"atk":135,"def":135,"spa":70,"spd":65,"spe":100},"abilities":["Defiant"],"customMega":true},{"name":"Mega Feraligatr","types":["Water","Dragon"],"cost":8,"spriteId":10283,"stats":{"hp":85,"atk":160,"def":125,"spa":89,"spd":93,"spe":78},"abilities":["Torrent","Sheer Force"],"customMega":false},{"name":"Mega Slowbro","types":["Water","Psychic"],"cost":8,"spriteId":10071,"stats":{"hp":95,"atk":75,"def":180,"spa":130,"spd":80,"spe":30},"abilities":["Shell Armor"],"customMega":false},{"name":"Snorlax","types":["Normal"],"cost":8,"spriteId":143,"stats":{"hp":160,"atk":110,"def":65,"spa":65,"spd":110,"spe":30},"abilities":["Immunity","Thick Fat","Gluttony"],"customMega":false},{"name":"Vanilluxe","types":["Ice"],"cost":8,"spriteId":584,"stats":{"hp":71,"atk":95,"def":85,"spa":110,"spd":95,"spe":79},"abilities":["Ice Body","Snow Warning","Weak Armor"],"customMega":false},{"name":"Alakazam","types":["Psychic"],"cost":7,"spriteId":65,"stats":{"hp":55,"atk":50,"def":45,"spa":135,"spd":95,"spe":120},"abilities":["Synchronize","Inner Focus","Magic Guard"],"customMega":false},{"name":"Alolan Raichu","types":["Electric","Psychic"],"cost":7,"spriteId":10100,"stats":{"hp":60,"atk":85,"def":50,"spa":95,"spd":85,"spe":110},"abilities":["Surge Surfer"],"customMega":false},{"name":"Delphox","types":["Fire","Psychic"],"cost":7,"spriteId":655,"stats":{"hp":75,"atk":69,"def":72,"spa":114,"spd":100,"spe":104},"abilities":["Blaze","Magician"],"customMega":false},{"name":"Empoleon","types":["Water","Steel"],"cost":7,"spriteId":395,"stats":{"hp":84,"atk":86,"def":88,"spa":111,"spd":101,"spe":60},"abilities":["Torrent","Competitive"],"customMega":false},{"name":"Florges","types":["Fairy"],"cost":7,"spriteId":671,"stats":{"hp":78,"atk":65,"def":68,"spa":112,"spd":154,"spe":75},"abilities":["Flower Veil","Symbiosis"],"customMega":false},{"name":"Galarian Slowking","types":["Poison","Psychic"],"cost":7,"spriteId":10172,"stats":{"hp":95,"atk":65,"def":80,"spa":110,"spd":110,"spe":30},"abilities":["Curious Medicine","Own Tempo","Regenerator"],"customMega":false},{"name":"Greninja","types":["Water","Dark"],"cost":7,"spriteId":658,"stats":{"hp":72,"atk":95,"def":67,"spa":103,"spd":71,"spe":122},"abilities":["Torrent","Protean","Battle Bond"],"customMega":false},{"name":"Infernape","types":["Fire","Fighting"],"cost":7,"spriteId":392,"stats":{"hp":76,"atk":104,"def":71,"spa":104,"spd":71,"spe":108},"abilities":["Blaze","Iron Fist"],"customMega":false},{"name":"Inteleon","types":["Water"],"cost":7,"spriteId":818,"stats":{"hp":70,"atk":85,"def":65,"spa":125,"spd":65,"spe":120},"abilities":["Torrent","Sniper"],"customMega":false},{"name":"Lucario","types":["Fighting","Steel"],"cost":7,"spriteId":448,"stats":{"hp":70,"atk":110,"def":70,"spa":115,"spd":70,"spe":90},"abilities":["Steadfast","Inner Focus","Justified"],"customMega":false},{"name":"Medicham","types":["Fighting","Psychic"],"cost":7,"spriteId":308,"stats":{"hp":60,"atk":60,"def":75,"spa":60,"spd":75,"spe":80},"abilities":["Pure Power","Telepathy"],"customMega":false},{"name":"Mega Chesnaught","types":["Grass","Fighting"],"cost":7,"spriteId":10292,"stats":{"hp":88,"atk":137,"def":172,"spa":74,"spd":115,"spe":44},"abilities":["Overgrow","Bulletproof"],"customMega":false},{"name":"Mega Dragalge","types":["Poison","Dragon"],"cost":7,"spriteId":10299,"stats":{"hp":65,"atk":85,"def":105,"spa":132,"spd":163,"spe":44},"abilities":["Regenerator"],"customMega":true},{"name":"Mega Heracross","types":["Bug","Fighting"],"cost":7,"spriteId":10047,"stats":{"hp":80,"atk":185,"def":115,"spa":40,"spd":105,"spe":75},"abilities":["Skill Link"],"customMega":false},{"name":"Mega Pidgeot","types":["Normal","Flying"],"cost":7,"spriteId":10073,"stats":{"hp":83,"atk":80,"def":80,"spa":135,"spd":80,"spe":121},"abilities":["No Guard"],"customMega":false},{"name":"Mega Pinsir","types":["Bug","Flying"],"cost":7,"spriteId":10040,"stats":{"hp":65,"atk":155,"def":120,"spa":65,"spd":90,"spe":105},"abilities":["Aerilate"],"customMega":false},{"name":"Mega Sceptile","types":["Grass","Dragon"],"cost":7,"spriteId":10065,"stats":{"hp":70,"atk":110,"def":75,"spa":145,"spd":85,"spe":145},"abilities":["Lightning Rod"],"customMega":false},{"name":"Mega Sharpedo","types":["Water","Dark"],"cost":7,"spriteId":10070,"stats":{"hp":70,"atk":140,"def":70,"spa":110,"spd":65,"spe":105},"abilities":["Strong Jaw"],"customMega":false},{"name":"Orthworm","types":["Steel"],"cost":7,"spriteId":968,"stats":{"hp":70,"atk":85,"def":145,"spa":60,"spd":55,"spe":65},"abilities":["Earth Eater","Sand Veil"],"customMega":false},{"name":"Slowbro","types":["Water","Psychic"],"cost":7,"spriteId":80,"stats":{"hp":95,"atk":75,"def":110,"spa":100,"spd":80,"spe":30},"abilities":["Oblivious","Own Tempo","Regenerator"],"customMega":false},{"name":"Slowking","types":["Water","Psychic"],"cost":7,"spriteId":199,"stats":{"hp":95,"atk":75,"def":80,"spa":100,"spd":110,"spe":30},"abilities":["Oblivious","Own Tempo","Regenerator"],"customMega":false},{"name":"Tsareena","types":["Grass"],"cost":7,"spriteId":763,"stats":{"hp":72,"atk":120,"def":98,"spa":50,"spd":98,"spe":72},"abilities":["Leaf Guard","Queenly Majesty","Sweet Veil"],"customMega":false},{"name":"Wyrdeer","types":["Normal","Psychic"],"cost":7,"spriteId":899,"stats":{"hp":103,"atk":105,"def":72,"spa":105,"spd":75,"spe":65},"abilities":["Intimidate","Frisk","Sap Sipper"],"customMega":false},{"name":"Abomasnow","types":["Grass","Ice"],"cost":6,"spriteId":460,"stats":{"hp":90,"atk":92,"def":75,"spa":92,"spd":85,"spe":60},"abilities":["Snow Warning","Soundproof"],"customMega":false},{"name":"Aromatisse","types":["Fairy"],"cost":6,"spriteId":683,"stats":{"hp":101,"atk":72,"def":72,"spa":99,"spd":89,"spe":29},"abilities":["Healer","Aroma Veil"],"customMega":false},{"name":"Chandelure","types":["Ghost","Fire"],"cost":6,"spriteId":609,"stats":{"hp":60,"atk":55,"def":90,"spa":145,"spd":90,"spe":80},"abilities":["Flash Fire","Flame Body","Infiltrator"],"customMega":false},{"name":"Diggersby","types":["Normal","Ground"],"cost":6,"spriteId":660,"stats":{"hp":85,"atk":56,"def":77,"spa":50,"spd":77,"spe":78},"abilities":["Pickup","Cheek Pouch","Huge Power"],"customMega":false},{"name":"Dragalge","types":["Poison","Dragon"],"cost":6,"spriteId":691,"stats":{"hp":65,"atk":75,"def":90,"spa":97,"spd":123,"spe":44},"abilities":["Poison Point","Poison Touch","Adaptability"],"customMega":false},{"name":"Galarian Slowbro","types":["Poison","Psychic"],"cost":6,"spriteId":10165,"stats":{"hp":95,"atk":100,"def":95,"spa":100,"spd":70,"spe":30},"abilities":["Quick Draw","Own Tempo","Regenerator"],"customMega":false},{"name":"Hisuian Goodra","types":["Steel","Dragon"],"cost":6,"spriteId":10242,"stats":{"hp":80,"atk":100,"def":100,"spa":110,"spd":150,"spe":60},"abilities":["Sap Sipper","Shell Armor","Gooey"],"customMega":false},{"name":"Hydrapple","types":["Grass","Dragon"],"cost":6,"spriteId":1019,"stats":{"hp":106,"atk":80,"def":110,"spa":120,"spd":80,"spe":44},"abilities":["Supersweet Syrup","Regenerator","Sticky Hold"],"customMega":false},{"name":"Kleavor","types":["Bug","Rock"],"cost":6,"spriteId":900,"stats":{"hp":70,"atk":135,"def":95,"spa":45,"spd":70,"spe":85},"abilities":["Swarm","Sheer Force","Sharpness"],"customMega":false},{"name":"Mega Abomasnow","types":["Grass","Ice"],"cost":6,"spriteId":10060,"stats":{"hp":90,"atk":132,"def":105,"spa":132,"spd":105,"spe":30},"abilities":["Snow Warning"],"customMega":false},{"name":"Mega Houndoom","types":["Dark","Fire"],"cost":6,"spriteId":10048,"stats":{"hp":75,"atk":90,"def":90,"spa":140,"spd":90,"spe":115},"abilities":["Solar Power"],"customMega":false},{"name":"Mega Scolipede","types":["Bug","Poison"],"cost":6,"spriteId":10288,"stats":{"hp":60,"atk":140,"def":149,"spa":75,"spd":99,"spe":62},"abilities":["Shell Armor"],"customMega":true},{"name":"Mega Steelix","types":["Steel","Ground"],"cost":6,"spriteId":10072,"stats":{"hp":75,"atk":125,"def":230,"spa":55,"spd":95,"spe":30},"abilities":["Sand Force"],"customMega":false},{"name":"Mega Victreebel","types":["Grass","Poison"],"cost":6,"spriteId":10279,"stats":{"hp":80,"atk":125,"def":85,"spa":135,"spd":95,"spe":70},"abilities":["Chlorophyll","Gluttony"],"customMega":false},{"name":"Musharna","types":["Psychic"],"cost":6,"spriteId":518,"stats":{"hp":116,"atk":55,"def":85,"spa":107,"spd":95,"spe":29},"abilities":["Forewarn","Synchronize","Telepathy"],"customMega":false},{"name":"Overqwil","types":["Dark","Poison"],"cost":6,"spriteId":904,"stats":{"hp":85,"atk":115,"def":95,"spa":65,"spd":65,"spe":85},"abilities":["Poison Point","Swift Swim","Intimidate"],"customMega":false},{"name":"Pangoro","types":["Fighting","Dark"],"cost":6,"spriteId":675,"stats":{"hp":95,"atk":124,"def":78,"spa":69,"spd":71,"spe":58},"abilities":["Iron Fist","Mold Breaker","Scrappy"],"customMega":false},{"name":"Pyroar","types":["Fire","Normal"],"cost":6,"spriteId":668,"stats":{"hp":86,"atk":68,"def":72,"spa":109,"spd":66,"spe":106},"abilities":["Rivalry","Unnerve","Moxie"],"customMega":false},{"name":"Scolipede","types":["Bug","Poison"],"cost":6,"spriteId":545,"stats":{"hp":60,"atk":100,"def":89,"spa":55,"spd":69,"spe":112},"abilities":["Poison Point","Swarm","Speed Boost"],"customMega":false},{"name":"Spiritomb","types":["Ghost","Dark"],"cost":6,"spriteId":442,"stats":{"hp":50,"atk":92,"def":108,"spa":92,"spd":108,"spe":35},"abilities":["Pressure","Infiltrator"],"customMega":false},{"name":"Zoroark","types":["Dark"],"cost":6,"spriteId":571,"stats":{"hp":60,"atk":105,"def":60,"spa":120,"spd":60,"spe":105},"abilities":["Illusion"],"customMega":false},{"name":"Barbaracle","types":["Rock","Water"],"cost":5,"spriteId":689,"stats":{"hp":72,"atk":105,"def":115,"spa":54,"spd":86,"spe":68},"abilities":["Tough Claws","Sniper","Pickpocket"],"customMega":false},{"name":"Charizard","types":["Fire","Flying"],"cost":5,"spriteId":6,"stats":{"hp":78,"atk":84,"def":78,"spa":109,"spd":85,"spe":100},"abilities":["Blaze","Solar Power"],"customMega":false},{"name":"Cofagrigus","types":["Ghost"],"cost":5,"spriteId":563,"stats":{"hp":58,"atk":50,"def":145,"spa":95,"spd":105,"spe":30},"abilities":["Mummy"],"customMega":false},{"name":"Garganacl","types":["Rock"],"cost":5,"spriteId":934,"stats":{"hp":100,"atk":100,"def":130,"spa":45,"spd":90,"spe":35},"abilities":["Purifying Salt","Sturdy","Clear Body"],"customMega":false},{"name":"Glaceon","types":["Ice"],"cost":5,"spriteId":471,"stats":{"hp":65,"atk":60,"def":110,"spa":130,"spd":95,"spe":65},"abilities":["Snow Cloak","Ice Body"],"customMega":false},{"name":"Gourgeist","types":["Ghost","Grass"],"cost":5,"spriteId":711,"stats":{"hp":65,"atk":90,"def":122,"spa":58,"spd":75,"spe":84},"abilities":["Pickup","Frisk","Insomnia"],"customMega":false},{"name":"Hippowdon","types":["Ground"],"cost":5,"spriteId":450,"stats":{"hp":108,"atk":112,"def":118,"spa":68,"spd":72,"spe":47},"abilities":["Sand Stream","Sand Force"],"customMega":false},{"name":"Leafeon","types":["Grass"],"cost":5,"spriteId":470,"stats":{"hp":65,"atk":110,"def":130,"spa":60,"spd":65,"spe":95},"abilities":["Leaf Guard","Chlorophyll"],"customMega":false},{"name":"Lycanroc-Dusk","types":["Rock"],"cost":5,"spriteId":10152,"stats":{"hp":75,"atk":117,"def":65,"spa":55,"spd":65,"spe":110},"abilities":["Tough Claws"],"customMega":false},{"name":"Mega Banette","types":["Ghost"],"cost":5,"spriteId":10056,"stats":{"hp":64,"atk":165,"def":75,"spa":93,"spd":83,"spe":75},"abilities":["Prankster"],"customMega":false},{"name":"Mega Beedrill","types":["Bug","Poison"],"cost":5,"spriteId":10090,"stats":{"hp":65,"atk":150,"def":40,"spa":15,"spd":80,"spe":145},"abilities":["Adaptability"],"customMega":false},{"name":"Mudsdale","types":["Ground"],"cost":5,"spriteId":750,"stats":{"hp":100,"atk":125,"def":100,"spa":55,"spd":85,"spe":35},"abilities":["Own Tempo","Stamina","Inner Focus"],"customMega":false},{"name":"Pincurchin","types":["Electric"],"cost":5,"spriteId":871,"stats":{"hp":48,"atk":101,"def":95,"spa":91,"spd":85,"spe":15},"abilities":["Lightning Rod","Electric Surge"],"customMega":false},{"name":"Polteageist","types":["Ghost"],"cost":5,"spriteId":855,"stats":{"hp":60,"atk":65,"def":65,"spa":134,"spd":114,"spe":70},"abilities":["Weak Armor","Cursed Body"],"customMega":false},{"name":"Quaquaval","types":["Water","Fighting"],"cost":5,"spriteId":914,"stats":{"hp":85,"atk":120,"def":80,"spa":85,"spd":75,"spe":85},"abilities":["Torrent","Moxie"],"customMega":false},{"name":"Runerigus","types":["Ground","Ghost"],"cost":5,"spriteId":867,"stats":{"hp":58,"atk":95,"def":145,"spa":50,"spd":105,"spe":30},"abilities":["Wandering Spirit"],"customMega":false},{"name":"Scrafty","types":["Dark","Fighting"],"cost":5,"spriteId":560,"stats":{"hp":65,"atk":90,"def":115,"spa":45,"spd":115,"spe":58},"abilities":["Shed Skin","Moxie","Intimidate"],"customMega":false},{"name":"Serperior","types":["Grass"],"cost":5,"spriteId":497,"stats":{"hp":75,"atk":75,"def":95,"spa":75,"spd":95,"spe":113},"abilities":["Overgrow","Contrary"],"customMega":false},{"name":"Sirfetch'd","types":["Fighting"],"cost":5,"spriteId":865,"stats":{"hp":62,"atk":135,"def":95,"spa":68,"spd":82,"spe":65},"abilities":["Steadfast","Scrappy"],"customMega":false},{"name":"Skeledirge","types":["Fire","Ghost"],"cost":5,"spriteId":911,"stats":{"hp":104,"atk":75,"def":100,"spa":110,"spd":75,"spe":66},"abilities":["Blaze","Unaware"],"customMega":false},{"name":"Typhlosion","types":["Fire"],"cost":5,"spriteId":157,"stats":{"hp":78,"atk":84,"def":78,"spa":109,"spd":85,"spe":100},"abilities":["Blaze","Flash Fire"],"customMega":false},{"name":"Umbreon","types":["Dark"],"cost":5,"spriteId":197,"stats":{"hp":95,"atk":65,"def":110,"spa":60,"spd":130,"spe":65},"abilities":["Synchronize","Inner Focus"],"customMega":false},{"name":"Vaporeon","types":["Water"],"cost":5,"spriteId":134,"stats":{"hp":130,"atk":65,"def":60,"spa":110,"spd":95,"spe":65},"abilities":["Water Absorb","Hydration"],"customMega":false},{"name":"Alcremie","types":["Fairy"],"cost":4,"spriteId":869,"stats":{"hp":65,"atk":60,"def":75,"spa":110,"spd":121,"spe":64},"abilities":["Sweet Veil","Aroma Veil"],"customMega":false},{"name":"Bellibolt","types":["Electric"],"cost":4,"spriteId":939,"stats":{"hp":109,"atk":64,"def":91,"spa":103,"spd":83,"spe":45},"abilities":["Electromorphosis","Static","Damp"],"customMega":false},{"name":"Chesnaught","types":["Grass","Fighting"],"cost":4,"spriteId":652,"stats":{"hp":88,"atk":107,"def":122,"spa":74,"spd":75,"spe":64},"abilities":["Overgrow","Bulletproof"],"customMega":false},{"name":"Clawitzer","types":["Water"],"cost":4,"spriteId":693,"stats":{"hp":71,"atk":73,"def":88,"spa":120,"spd":89,"spe":59},"abilities":["Mega Launcher"],"customMega":false},{"name":"Ditto","types":["Normal"],"cost":4,"spriteId":132,"stats":{"hp":48,"atk":48,"def":48,"spa":48,"spd":48,"spe":48},"abilities":["Limber","Imposter"],"customMega":false},{"name":"Froslass","types":["Ice","Ghost"],"cost":4,"spriteId":478,"stats":{"hp":70,"atk":80,"def":70,"spa":80,"spd":70,"spe":110},"abilities":["Snow Cloak","Cursed Body"],"customMega":false},{"name":"Golurk","types":["Ground","Ghost"],"cost":4,"spriteId":623,"stats":{"hp":89,"atk":124,"def":80,"spa":55,"spd":80,"spe":55},"abilities":["Iron Fist","Klutz","No Guard"],"customMega":false},{"name":"Goodra","types":["Dragon"],"cost":4,"spriteId":706,"stats":{"hp":90,"atk":100,"def":70,"spa":110,"spd":150,"spe":80},"abilities":["Sap Sipper","Hydration","Gooey"],"customMega":false},{"name":"Heliolisk","types":["Electric","Normal"],"cost":4,"spriteId":695,"stats":{"hp":62,"atk":55,"def":52,"spa":109,"spd":94,"spe":109},"abilities":["Dry Skin","Sand Veil","Solar Power"],"customMega":false},{"name":"Hisuian Decidueye","types":["Grass","Fighting"],"cost":4,"spriteId":10244,"stats":{"hp":88,"atk":112,"def":80,"spa":95,"spd":95,"spe":60},"abilities":["Overgrow","Scrappy"],"customMega":false},{"name":"Hisuian Samurott","types":["Water","Dark"],"cost":4,"spriteId":10236,"stats":{"hp":90,"atk":108,"def":80,"spa":100,"spd":65,"spe":85},"abilities":["Torrent","Sharpness"],"customMega":false},{"name":"Jolteon","types":["Electric"],"cost":4,"spriteId":135,"stats":{"hp":65,"atk":65,"def":60,"spa":110,"spd":95,"spe":130},"abilities":["Volt Absorb","Quick Feet"],"customMega":false},{"name":"Luxray","types":["Electric"],"cost":4,"spriteId":405,"stats":{"hp":80,"atk":120,"def":79,"spa":95,"spd":79,"spe":70},"abilities":["Rivalry","Intimidate","Guts"],"customMega":false},{"name":"Machamp","types":["Fighting"],"cost":4,"spriteId":68,"stats":{"hp":90,"atk":130,"def":80,"spa":65,"spd":85,"spe":55},"abilities":["Guts","No Guard","Steadfast"],"customMega":false},{"name":"Mega Absol","types":["Dark"],"cost":4,"spriteId":10057,"stats":{"hp":65,"atk":150,"def":60,"spa":115,"spd":60,"spe":115},"abilities":["Magic Bounce"],"customMega":false},{"name":"Perrserker","types":["Steel"],"cost":4,"spriteId":863,"stats":{"hp":70,"atk":110,"def":100,"spa":50,"spd":60,"spe":50},"abilities":["Battle Armor","Tough Claws","Steely Spirit"],"customMega":false},{"name":"Rampardos","types":["Rock"],"cost":4,"spriteId":409,"stats":{"hp":97,"atk":165,"def":60,"spa":65,"spd":50,"spe":58},"abilities":["Mold Breaker","Sheer Force"],"customMega":false},{"name":"Roserade","types":["Grass","Poison"],"cost":4,"spriteId":407,"stats":{"hp":60,"atk":70,"def":65,"spa":125,"spd":105,"spe":90},"abilities":["Natural Cure","Poison Point","Technician"],"customMega":false},{"name":"Rotom-Frost","types":["Electric","Ice"],"cost":4,"spriteId":10010,"stats":{"hp":50,"atk":65,"def":107,"spa":105,"spd":107,"spe":86},"abilities":["Levitate"],"customMega":false},{"name":"Slurpuff","types":["Fairy"],"cost":4,"spriteId":685,"stats":{"hp":82,"atk":80,"def":86,"spa":85,"spd":75,"spe":72},"abilities":["Sweet Veil","Unburden"],"customMega":false},{"name":"Starmie","types":["Water","Psychic"],"cost":4,"spriteId":121,"stats":{"hp":60,"atk":75,"def":85,"spa":100,"spd":85,"spe":115},"abilities":["Illuminate","Natural Cure","Analytic"],"customMega":false},{"name":"Torterra","types":["Grass","Ground"],"cost":4,"spriteId":389,"stats":{"hp":95,"atk":109,"def":105,"spa":75,"spd":85,"spe":56},"abilities":["Overgrow","Shell Armor"],"customMega":false},{"name":"Toxicroak","types":["Poison","Fighting"],"cost":4,"spriteId":454,"stats":{"hp":83,"atk":106,"def":65,"spa":86,"spd":65,"spe":85},"abilities":["Anticipation","Dry Skin","Poison Touch"],"customMega":false},{"name":"Tyrantrum","types":["Rock","Dragon"],"cost":4,"spriteId":697,"stats":{"hp":82,"atk":121,"def":119,"spa":69,"spd":59,"spe":71},"abilities":["Strong Jaw","Rock Head"],"customMega":false},{"name":"Vileplume","types":["Grass","Poison"],"cost":4,"spriteId":45,"stats":{"hp":75,"atk":80,"def":85,"spa":110,"spd":90,"spe":50},"abilities":["Chlorophyll","Effect Spore"],"customMega":false},{"name":"Audino","types":["Normal"],"cost":3,"spriteId":531,"stats":{"hp":103,"atk":60,"def":86,"spa":60,"spd":86,"spe":50},"abilities":["Healer","Regenerator","Klutz"],"customMega":false},{"name":"Aurorus","types":["Rock","Ice"],"cost":3,"spriteId":699,"stats":{"hp":123,"atk":77,"def":72,"spa":99,"spd":92,"spe":58},"abilities":["Refrigerate","Snow Warning"],"customMega":false},{"name":"Beartic","types":["Ice"],"cost":3,"spriteId":614,"stats":{"hp":95,"atk":130,"def":80,"spa":70,"spd":80,"spe":50},"abilities":["Snow Cloak","Slush Rush","Swift Swim"],"customMega":false},{"name":"Crabominable","types":["Fighting","Ice"],"cost":3,"spriteId":740,"stats":{"hp":97,"atk":132,"def":77,"spa":62,"spd":67,"spe":43},"abilities":["Hyper Cutter","Iron Fist","Anger Point"],"customMega":false},{"name":"Decidueye","types":["Grass","Ghost"],"cost":3,"spriteId":724,"stats":{"hp":78,"atk":107,"def":75,"spa":100,"spd":100,"spe":70},"abilities":["Overgrow","Long Reach"],"customMega":false},{"name":"Drampa","types":["Normal","Dragon"],"cost":3,"spriteId":780,"stats":{"hp":78,"atk":60,"def":85,"spa":135,"spd":91,"spe":36},"abilities":["Berserk","Sap Sipper","Cloud Nine"],"customMega":false},{"name":"Eelektross","types":["Electric"],"cost":3,"spriteId":604,"stats":{"hp":85,"atk":115,"def":80,"spa":105,"spd":80,"spe":50},"abilities":["Levitate"],"customMega":false},{"name":"Emboar","types":["Fire","Fighting"],"cost":3,"spriteId":500,"stats":{"hp":110,"atk":123,"def":65,"spa":100,"spd":65,"spe":65},"abilities":["Blaze","Reckless"],"customMega":false},{"name":"Feraligatr","types":["Water"],"cost":3,"spriteId":160,"stats":{"hp":85,"atk":105,"def":100,"spa":79,"spd":83,"spe":78},"abilities":["Torrent","Sheer Force"],"customMega":false},{"name":"Flapple","types":["Grass","Dragon"],"cost":3,"spriteId":841,"stats":{"hp":70,"atk":110,"def":80,"spa":95,"spd":60,"spe":70},"abilities":["Ripen","Gluttony","Hustle"],"customMega":false},{"name":"Flareon","types":["Fire"],"cost":3,"spriteId":136,"stats":{"hp":65,"atk":130,"def":60,"spa":95,"spd":110,"spe":65},"abilities":["Flash Fire","Guts"],"customMega":false},{"name":"Gliscor","types":["Ground","Flying"],"cost":3,"spriteId":472,"stats":{"hp":75,"atk":95,"def":125,"spa":45,"spd":75,"spe":95},"abilities":["Hyper Cutter","Sand Veil","Poison Heal"],"customMega":false},{"name":"Gogoat","types":["Grass"],"cost":3,"spriteId":673,"stats":{"hp":123,"atk":100,"def":62,"spa":97,"spd":81,"spe":68},"abilities":["Sap Sipper","Grass Pelt"],"customMega":false},{"name":"Grapploct","types":["Fighting"],"cost":3,"spriteId":853,"stats":{"hp":80,"atk":118,"def":90,"spa":70,"spd":80,"spe":42},"abilities":["Limber","Technician"],"customMega":false},{"name":"Heracross","types":["Bug","Fighting"],"cost":3,"spriteId":214,"stats":{"hp":80,"atk":125,"def":75,"spa":40,"spd":95,"spe":85},"abilities":["Swarm","Guts","Moxie"],"customMega":false},{"name":"Houndstone","types":["Ghost"],"cost":3,"spriteId":972,"stats":{"hp":72,"atk":101,"def":100,"spa":50,"spd":97,"spe":68},"abilities":["Sand Rush","Fluffy"],"customMega":false},{"name":"Lycanroc-Midday","types":["Rock"],"cost":3,"spriteId":745,"stats":{"hp":75,"atk":115,"def":65,"spa":55,"spd":65,"spe":112},"abilities":["Keen Eye","Sand Rush","Steadfast"],"customMega":false},{"name":"Mega Ampharos","types":["Electric","Dragon"],"cost":3,"spriteId":10045,"stats":{"hp":90,"atk":95,"def":105,"spa":165,"spd":110,"spe":45},"abilities":["Mold Breaker"],"customMega":false},{"name":"Mega Glalie","types":["Ice"],"cost":3,"spriteId":10074,"stats":{"hp":80,"atk":120,"def":80,"spa":120,"spd":80,"spe":100},"abilities":["Refrigerate"],"customMega":false},{"name":"Mega Malamar","types":["Dark","Psychic"],"cost":3,"spriteId":10297,"stats":{"hp":86,"atk":102,"def":88,"spa":98,"spd":120,"spe":88},"abilities":["Contrary"],"customMega":true},{"name":"Mr. Rime","types":["Ice","Psychic"],"cost":3,"spriteId":866,"stats":{"hp":80,"atk":85,"def":75,"spa":110,"spd":100,"spe":70},"abilities":["Tangled Feet","Screen Cleaner","Ice Body"],"customMega":false},{"name":"Paldean Tauros","types":["Fighting"],"cost":3,"spriteId":10250,"stats":{"hp":75,"atk":110,"def":105,"spa":30,"spd":70,"spe":100},"abilities":["Intimidate","Anger Point","Cud Chew"],"customMega":false},{"name":"Passimian","types":["Fighting"],"cost":3,"spriteId":766,"stats":{"hp":100,"atk":120,"def":90,"spa":40,"spd":60,"spe":80},"abilities":["Receiver","Defiant"],"customMega":false},{"name":"Scovillain","types":["Grass","Fire"],"cost":3,"spriteId":952,"stats":{"hp":65,"atk":108,"def":65,"spa":108,"spd":65,"spe":75},"abilities":["Chlorophyll","Insomnia","Moody"],"customMega":false},{"name":"Skarmory","types":["Steel","Flying"],"cost":3,"spriteId":227,"stats":{"hp":65,"atk":80,"def":140,"spa":40,"spd":70,"spe":70},"abilities":["Keen Eye","Sturdy","Weak Armor"],"customMega":false},{"name":"Toxapex","types":["Poison","Water"],"cost":3,"spriteId":748,"stats":{"hp":50,"atk":63,"def":152,"spa":53,"spd":142,"spe":35},"abilities":["Merciless","Limber","Regenerator"],"customMega":false},{"name":"Toxtricity","types":["Electric","Poison"],"cost":3,"spriteId":849,"stats":{"hp":75,"atk":98,"def":70,"spa":114,"spd":70,"spe":75},"abilities":["Punk Rock","Plus","Technician"],"customMega":false},{"name":"Trevenant","types":["Ghost","Grass"],"cost":3,"spriteId":709,"stats":{"hp":85,"atk":110,"def":76,"spa":65,"spd":82,"spe":56},"abilities":["Natural Cure","Frisk","Harvest"],"customMega":false},{"name":"Victreebel","types":["Grass","Poison"],"cost":3,"spriteId":71,"stats":{"hp":80,"atk":105,"def":65,"spa":100,"spd":70,"spe":70},"abilities":["Chlorophyll","Gluttony"],"customMega":false},{"name":"Aggron","types":["Steel","Rock"],"cost":2,"spriteId":306,"stats":{"hp":70,"atk":110,"def":180,"spa":60,"spd":60,"spe":50},"abilities":["Sturdy","Rock Head","Heavy Metal"],"customMega":false},{"name":"Alolan Persian","types":["Dark"],"cost":2,"spriteId":10108,"stats":{"hp":65,"atk":60,"def":60,"spa":75,"spd":65,"spe":115},"abilities":["Fur Coat","Technician","Rattled"],"customMega":false},{"name":"Arbok","types":["Poison"],"cost":2,"spriteId":24,"stats":{"hp":60,"atk":95,"def":69,"spa":65,"spd":79,"spe":80},"abilities":["Intimidate","Shed Skin","Unnerve"],"customMega":false},{"name":"Ariados","types":["Bug","Poison"],"cost":2,"spriteId":168,"stats":{"hp":70,"atk":90,"def":70,"spa":60,"spd":70,"spe":40},"abilities":["Swarm","Insomnia","Sniper"],"customMega":false},{"name":"Bastiodon","types":["Rock","Steel"],"cost":2,"spriteId":411,"stats":{"hp":60,"atk":52,"def":168,"spa":47,"spd":138,"spe":30},"abilities":["Sturdy","Soundproof"],"customMega":false},{"name":"Mabosstiff","types":["Dark"],"cost":2,"spriteId":943,"stats":{"hp":80,"atk":120,"def":90,"spa":60,"spd":70,"spe":85},"abilities":["Intimidate","Guard Dog","Stakeout"],"customMega":false},{"name":"Malamar","types":["Dark","Psychic"],"cost":2,"spriteId":687,"stats":{"hp":86,"atk":92,"def":88,"spa":68,"spd":75,"spe":73},"abilities":["Contrary","Suction Cups","Infiltrator"],"customMega":false},{"name":"Mawile","types":["Steel","Fairy"],"cost":2,"spriteId":303,"stats":{"hp":50,"atk":85,"def":85,"spa":55,"spd":55,"spe":50},"abilities":["Hyper Cutter","Intimidate","Sheer Force"],"customMega":false},{"name":"Mega Audino","types":["Normal","Fairy"],"cost":2,"spriteId":10069,"stats":{"hp":103,"atk":60,"def":126,"spa":80,"spd":126,"spe":50},"abilities":["Healer"],"customMega":false},{"name":"Meowstic-Female","types":["Psychic"],"cost":2,"spriteId":10025,"stats":{"hp":74,"atk":48,"def":76,"spa":83,"spd":81,"spe":104},"abilities":["Keen Eye","Infiltrator","Competitive"],"customMega":false},{"name":"Morpeko","types":["Electric","Dark"],"cost":2,"spriteId":877,"stats":{"hp":58,"atk":95,"def":58,"spa":70,"spd":58,"spe":97},"abilities":["Hunger Switch"],"customMega":false},{"name":"Mr. Mime","types":["Psychic","Fairy"],"cost":2,"spriteId":122,"stats":{"hp":40,"atk":45,"def":65,"spa":100,"spd":120,"spe":90},"abilities":["Soundproof","Filter","Technician"],"customMega":false},{"name":"Rotom","types":["Electric","Ghost"],"cost":2,"spriteId":479,"stats":{"hp":50,"atk":50,"def":77,"spa":95,"spd":77,"spe":91},"abilities":["Levitate"],"customMega":false},{"name":"Rotom-Fan","types":["Electric","Flying"],"cost":2,"spriteId":10011,"stats":{"hp":50,"atk":65,"def":107,"spa":105,"spd":107,"spe":86},"abilities":["Levitate"],"customMega":false},{"name":"Sandaconda","types":["Ground"],"cost":2,"spriteId":844,"stats":{"hp":72,"atk":107,"def":125,"spa":65,"spd":70,"spe":71},"abilities":["Sand Spit","Shed Skin","Sand Veil"],"customMega":false},{"name":"Sceptile","types":["Grass"],"cost":2,"spriteId":254,"stats":{"hp":70,"atk":85,"def":65,"spa":105,"spd":85,"spe":120},"abilities":["Overgrow","Unburden"],"customMega":false},{"name":"Sharpedo","types":["Water","Dark"],"cost":2,"spriteId":319,"stats":{"hp":70,"atk":120,"def":40,"spa":95,"spd":40,"spe":95},"abilities":["Rough Skin","Speed Boost"],"customMega":false},{"name":"Squawkabilly B/G","types":["Normal","Flying"],"cost":2,"spriteId":10260,"stats":{"hp":82,"atk":96,"def":51,"spa":45,"spd":51,"spe":92},"abilities":["Intimidate","Hustle","Guts"],"customMega":false},{"name":"Squawkabilly Y/W","types":["Normal","Flying"],"cost":2,"spriteId":10261,"stats":{"hp":82,"atk":96,"def":51,"spa":45,"spd":51,"spe":92},"abilities":["Intimidate","Hustle","Sheer Force"],"customMega":false},{"name":"Steelix","types":["Steel","Ground"],"cost":2,"spriteId":208,"stats":{"hp":75,"atk":85,"def":200,"spa":55,"spd":65,"spe":30},"abilities":["Rock Head","Sturdy","Sheer Force"],"customMega":false},{"name":"Tauros","types":["Normal"],"cost":2,"spriteId":128,"stats":{"hp":75,"atk":100,"def":95,"spa":40,"spd":70,"spe":110},"abilities":["Intimidate","Anger Point","Sheer Force"],"customMega":false},{"name":"Thievul","types":["Dark"],"cost":2,"spriteId":828,"stats":{"hp":70,"atk":58,"def":58,"spa":87,"spd":92,"spe":90},"abilities":["Run Away","Unburden","Stakeout"],"customMega":false},{"name":"Wigglytuff","types":["Normal","Fairy"],"cost":2,"spriteId":40,"stats":{"hp":140,"atk":70,"def":45,"spa":85,"spd":50,"spe":45},"abilities":["Cute Charm","Competitive","Frisk"],"customMega":false},{"name":"Absol","types":["Dark"],"cost":1,"spriteId":359,"stats":{"hp":65,"atk":130,"def":60,"spa":75,"spd":60,"spe":75},"abilities":["Pressure","Super Luck","Justified"],"customMega":false},{"name":"Altaria","types":["Dragon","Flying"],"cost":1,"spriteId":334,"stats":{"hp":75,"atk":70,"def":90,"spa":70,"spd":105,"spe":80},"abilities":["Natural Cure","Cloud Nine"],"customMega":false},{"name":"Ampharos","types":["Electric"],"cost":1,"spriteId":181,"stats":{"hp":90,"atk":75,"def":85,"spa":115,"spd":90,"spe":55},"abilities":["Static","Plus"],"customMega":false},{"name":"Appletun","types":["Grass","Dragon"],"cost":1,"spriteId":842,"stats":{"hp":110,"atk":85,"def":80,"spa":100,"spd":80,"spe":30},"abilities":["Ripen","Gluttony","Thick Fat"],"customMega":false},{"name":"Avalugg","types":["Ice"],"cost":1,"spriteId":713,"stats":{"hp":95,"atk":117,"def":184,"spa":44,"spd":46,"spe":28},"abilities":["Own Tempo","Ice Body","Sturdy"],"customMega":false},{"name":"Banette","types":["Ghost"],"cost":1,"spriteId":354,"stats":{"hp":64,"atk":115,"def":65,"spa":83,"spd":63,"spe":65},"abilities":["Insomnia","Frisk","Cursed Body"],"customMega":false},{"name":"Beedrill","types":["Bug","Poison"],"cost":1,"spriteId":15,"stats":{"hp":65,"atk":90,"def":40,"spa":45,"spd":80,"spe":75},"abilities":["Swarm","Sniper"],"customMega":false},{"name":"Camerupt","types":["Fire","Ground"],"cost":1,"spriteId":323,"stats":{"hp":70,"atk":100,"def":70,"spa":105,"spd":75,"spe":40},"abilities":["Magma Armor","Solid Rock","Anger Point"],"customMega":false},{"name":"Castform","types":["Normal"],"cost":1,"spriteId":351,"stats":{"hp":70,"atk":70,"def":70,"spa":70,"spd":70,"spe":70},"abilities":["Forecast"],"customMega":false},{"name":"Chimecho","types":["Psychic"],"cost":1,"spriteId":358,"stats":{"hp":75,"atk":50,"def":80,"spa":95,"spd":90,"spe":65},"abilities":["Levitate"],"customMega":false},{"name":"Dedenne","types":["Electric","Fairy"],"cost":1,"spriteId":702,"stats":{"hp":67,"atk":58,"def":57,"spa":81,"spd":67,"spe":101},"abilities":["Cheek Pouch","Pickup","Plus"],"customMega":false},{"name":"Emolga","types":["Electric","Flying"],"cost":1,"spriteId":587,"stats":{"hp":55,"atk":75,"def":60,"spa":75,"spd":60,"spe":103},"abilities":["Static","Motor Drive"],"customMega":false},{"name":"Falinks","types":["Fighting"],"cost":1,"spriteId":870,"stats":{"hp":65,"atk":100,"def":100,"spa":70,"spd":60,"spe":75},"abilities":["Battle Armor","Defiant"],"customMega":false},{"name":"Farfetch'd","types":["Normal","Flying"],"cost":1,"spriteId":83,"stats":{"hp":52,"atk":90,"def":55,"spa":58,"spd":62,"spe":60},"abilities":["Keen Eye","Inner Focus","Defiant"],"customMega":false},{"name":"Forretress","types":["Bug","Steel"],"cost":1,"spriteId":205,"stats":{"hp":75,"atk":90,"def":140,"spa":60,"spd":60,"spe":40},"abilities":["Sturdy","Overcoat"],"customMega":false},{"name":"Furfrou","types":["Normal"],"cost":1,"spriteId":676,"stats":{"hp":75,"atk":80,"def":60,"spa":65,"spd":90,"spe":102},"abilities":["Fur Coat"],"customMega":false},{"name":"Galarian Stunfisk","types":["Ground","Steel"],"cost":1,"spriteId":10180,"stats":{"hp":109,"atk":81,"def":99,"spa":66,"spd":84,"spe":32},"abilities":["Mimicry"],"customMega":false},{"name":"Garbodor","types":["Poison"],"cost":1,"spriteId":569,"stats":{"hp":80,"atk":95,"def":82,"spa":60,"spd":82,"spe":75},"abilities":["Stench","Weak Armor","Aftermath"],"customMega":false},{"name":"Glalie","types":["Ice"],"cost":1,"spriteId":362,"stats":{"hp":80,"atk":80,"def":80,"spa":80,"spd":80,"spe":80},"abilities":["Inner Focus","Ice Body","Moody"],"customMega":false},{"name":"Hisuian Avalugg","types":["Ice","Rock"],"cost":1,"spriteId":10243,"stats":{"hp":95,"atk":127,"def":184,"spa":34,"spd":36,"spe":38},"abilities":["Strong Jaw","Ice Body","Sturdy"],"customMega":false},{"name":"Houndoom","types":["Dark","Fire"],"cost":1,"spriteId":229,"stats":{"hp":75,"atk":90,"def":50,"spa":110,"spd":80,"spe":95},"abilities":["Early Bird","Flash Fire","Unnerve"],"customMega":false},{"name":"Lopunny","types":["Normal"],"cost":1,"spriteId":428,"stats":{"hp":65,"atk":76,"def":84,"spa":54,"spd":96,"spe":105},"abilities":["Cute Charm","Klutz","Limber"],"customMega":false},{"name":"Lycanroc-Midnight","types":["Rock"],"cost":1,"spriteId":10126,"stats":{"hp":85,"atk":115,"def":75,"spa":55,"spd":75,"spe":82},"abilities":["Keen Eye","Vital Spirit","No Guard"],"customMega":false},{"name":"Manectric","types":["Electric"],"cost":1,"spriteId":310,"stats":{"hp":70,"atk":75,"def":60,"spa":105,"spd":60,"spe":105},"abilities":["Static","Lightning Rod","Minus"],"customMega":false},{"name":"Meganium","types":["Grass"],"cost":1,"spriteId":154,"stats":{"hp":80,"atk":82,"def":100,"spa":83,"spd":100,"spe":80},"abilities":["Overgrow","Leaf Guard"],"customMega":false},{"name":"Persian","types":["Normal"],"cost":1,"spriteId":53,"stats":{"hp":65,"atk":70,"def":60,"spa":65,"spd":65,"spe":115},"abilities":["Limber","Technician","Unnerve"],"customMega":false},{"name":"Pidgeot","types":["Normal","Flying"],"cost":1,"spriteId":18,"stats":{"hp":83,"atk":80,"def":75,"spa":70,"spd":70,"spe":101},"abilities":["Keen Eye","Tangled Feet","Big Pecks"],"customMega":false},{"name":"Pikachu","types":["Electric"],"cost":1,"spriteId":25,"stats":{"hp":35,"atk":55,"def":40,"spa":50,"spd":50,"spe":90},"abilities":["Static","Lightning Rod"],"customMega":false},{"name":"Pinsir","types":["Bug"],"cost":1,"spriteId":127,"stats":{"hp":65,"atk":125,"def":100,"spa":55,"spd":70,"spe":85},"abilities":["Hyper Cutter","Mold Breaker","Moxie"],"customMega":false},{"name":"Qwilfish","types":["Water","Poison"],"cost":1,"spriteId":211,"stats":{"hp":65,"atk":95,"def":85,"spa":55,"spd":55,"spe":85},"abilities":["Poison Point","Swift Swim","Intimidate"],"customMega":false},{"name":"Samurott","types":["Water"],"cost":1,"spriteId":503,"stats":{"hp":95,"atk":100,"def":85,"spa":108,"spd":70,"spe":70},"abilities":["Torrent","Shell Armor"],"customMega":false},{"name":"Simipour","types":["Water"],"cost":1,"spriteId":516,"stats":{"hp":75,"atk":98,"def":63,"spa":98,"spd":63,"spe":101},"abilities":["Gluttony","Torrent"],"customMega":false},{"name":"Simisage","types":["Grass"],"cost":1,"spriteId":512,"stats":{"hp":75,"atk":98,"def":63,"spa":98,"spd":63,"spe":101},"abilities":["Gluttony","Overgrow"],"customMega":false},{"name":"Simisear","types":["Fire"],"cost":1,"spriteId":514,"stats":{"hp":75,"atk":98,"def":63,"spa":98,"spd":63,"spe":101},"abilities":["Gluttony","Blaze"],"customMega":false},{"name":"Stunfisk","types":["Ground","Electric"],"cost":1,"spriteId":618,"stats":{"hp":109,"atk":66,"def":84,"spa":81,"spd":99,"spe":32},"abilities":["Static","Limber","Sand Veil"],"customMega":false},{"name":"Swalot","types":["Poison"],"cost":1,"spriteId":317,"stats":{"hp":100,"atk":73,"def":83,"spa":73,"spd":83,"spe":55},"abilities":["Liquid Ooze","Sticky Hold","Gluttony"],"customMega":false},{"name":"Toucannon","types":["Normal","Flying"],"cost":1,"spriteId":733,"stats":{"hp":80,"atk":120,"def":75,"spa":75,"spd":75,"spe":60},"abilities":["Keen Eye","Skill Link","Sheer Force"],"customMega":false},{"name":"Watchog","types":["Normal"],"cost":1,"spriteId":505,"stats":{"hp":60,"atk":85,"def":69,"spa":60,"spd":69,"spe":77},"abilities":["Illuminate","Keen Eye","Analytic"],"customMega":false}];
+</script>
+<script>
+/* ======================= STATE & PERSISTENCE ======================= */
+const STORE_KEY = "championsDraftLeague.v1";
+const TYPE_LIST = ["Normal","Fire","Water","Electric","Grass","Ice","Fighting","Poison","Ground","Flying","Psychic","Bug","Rock","Ghost","Dragon","Dark","Steel","Fairy"];
+const BUDGET = 100, MIN_ROSTER = 10, MAX_PLAYERS = 12, MIN_PLAYERS = 2, DEFAULT_PLAYERS = 4;
+const STAT_KEYS = [["hp","HP"],["atk","ATK"],["def","DEF"],["spa","SPA"],["spd","SPD"],["spe","SPE"]];
+const POKE_BY_NAME = Object.fromEntries(POKEMON.map(p=>[p.name,p]));
+
+/* ===== League extras: coaches, schedule, playoff structure ===== */
+const COACHES = [
+  {name:"Adam", color:"#e23a2e", dark:false},
+  {name:"Errol", color:"#28d6ff", dark:true},
+  {name:"GiroNovum", color:"#8230b8", dark:false},
+  {name:"Hawdur", color:"#d2d6df", dark:true},
+  {name:"rLogan", color:"#a11616", dark:false},
+  {name:"Salacious B", color:"#ffd60a", dark:true},
+  {name:"Suraj", color:"#18a64a", dark:false},
+  {name:"Virgil", color:"#ffb22e", dark:true}
+];
+const COACH_BY_NAME = Object.fromEntries(COACHES.map(c=>[c.name,c]));
+const SCHEDULE = [
+  {n:1, date:"Jul 4",  m:[["Adam","Salacious B"],["GiroNovum","rLogan"],["Suraj","Hawdur"],["Errol","Virgil"]]},
+  {n:2, date:"Jul 11", m:[["Salacious B","Hawdur"],["Virgil","GiroNovum"],["Suraj","Adam"],["Errol","rLogan"]]},
+  {n:3, date:"Jul 18", m:[["GiroNovum","Salacious B"],["Hawdur","rLogan"],["Errol","Suraj"],["Virgil","Adam"]]},
+  {n:4, date:"Jul 25", m:[["Virgil","Salacious B"],["Suraj","rLogan"],["GiroNovum","Hawdur"],["Errol","Adam"]]},
+  {n:5, date:"Aug 1",  m:[["Errol","Hawdur"],["Suraj","Virgil"],["Salacious B","rLogan"],["Adam","GiroNovum"]]},
+  {n:6, date:"Aug 8",  m:[["Virgil","rLogan"],["Errol","Salacious B"],["Suraj","GiroNovum"],["Adam","Hawdur"]]},
+  {n:7, date:"Aug 15", m:[["Virgil","Hawdur"],["Suraj","Salacious B"],["Adam","rLogan"],["Errol","GiroNovum"]]}
+];
+const PLAYOFF_MATCHES = [
+  {id:"A", date:"Aug 22", feed:["seed:1","seed:8"]},
+  {id:"B", date:"Aug 22", feed:["seed:4","seed:5"]},
+  {id:"C", date:"Aug 22", feed:["seed:3","seed:6"]},
+  {id:"D", date:"Aug 22", feed:["seed:2","seed:7"]},
+  {id:"E", date:"Aug 29", feed:["win:A","win:B"]},
+  {id:"F", date:"Aug 29", feed:["win:C","win:D"]},
+  {id:"G", date:"Aug 29", feed:["lose:A","lose:C"]},
+  {id:"H", date:"Aug 29", feed:["lose:B","lose:D"]},
+  {id:"I", date:"Sept 5", feed:["win:E","win:F"]},
+  {id:"J", date:"Sept 5", feed:["win:G","win:H"]},
+  {id:"K", date:"Sep 12", feed:["win:I","win:J"]}
+];
+const PLAYOFF_BY_ID = Object.fromEntries(PLAYOFF_MATCHES.map(m=>[m.id,m]));
+const DEFAULT_SEEDS = {1:"Salacious B",2:"Errol",3:"Adam",4:"Virgil",5:"GiroNovum",6:"Suraj",7:"Hawdur",8:"rLogan"};
+
+
+let app = null;       // {activeLeagueId, leagues:{}}
+let league = null;    // active league
+let ui = { tab:"board", search:"", sort:"cost-desc", types:new Set(), avail:"all", openStats:new Set(), draftFor:null, completeShown:false, faMode:false, faTeam:null };
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+function newLeague(name, playerCount=DEFAULT_PLAYERS){
+  const players=[];
+  for(let i=0;i<playerCount;i++) players.push(newPlayer(i));
+  return { id:uid(), name:name||"Champions Draft", createdAt:Date.now(), updatedAt:Date.now(),
+           players, order:players.map(p=>p.id), picks:[] };
+}
+function newPlayer(i){ return { id:uid(), name:"Coach "+(i+1), teamName:"Team "+(i+1), logo:null }; }
+
+function load(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(raw){ app=JSON.parse(raw); }
+  }catch(e){ app=null; }
+  if(!app || !app.leagues || !Object.keys(app.leagues).length){
+    const lg=newLeague("Champions Draft");
+    app={ activeLeagueId:lg.id, leagues:{[lg.id]:lg} };
+    persist();
+  }
+  if(!app.leagues[app.activeLeagueId]) app.activeLeagueId=Object.keys(app.leagues)[0];
+  league=app.leagues[app.activeLeagueId];
+  // integrity
+  if(!league.order) league.order=league.players.map(p=>p.id);
+  league.order=league.order.filter(id=>league.players.some(p=>p.id===id));
+  league.players.forEach(p=>{ if(!league.order.includes(p.id)) league.order.push(p.id); });
+}
+function persist(){
+  if(typeof isGuest==='function' && isGuest()) return; // guests mirror the host's state; never overwrite their own saved leagues
+  try{
+    if(league) league.updatedAt=Date.now();
+    localStorage.setItem(STORE_KEY, JSON.stringify(app));
+  }catch(e){
+    toast("Couldn't save — storage may be full (try smaller logos).", true);
+  }
+}
+function save(){ persist(); if(typeof net!=='undefined' && net.role==='host' && net.broadcast) net.broadcast(); }  // every mutation calls this
+
+/* ======================= DRAFT LOGIC ======================= */
+function orderedPlayers(){ return league.order.map(id=>league.players.find(p=>p.id===id)).filter(Boolean); }
+function rosterOf(pid){ return league.picks.filter(pk=>pk.playerId===pid); }
+function spentBy(pid){ return rosterOf(pid).reduce((s,pk)=>s+pk.cost,0); }
+function remainingBudget(pid){ return BUDGET - spentBy(pid); }
+function rosterCount(pid){ return rosterOf(pid).length; }
+// max a player can spend on their NEXT single pick and still afford 10 total (each remaining ≥1pt)
+function maxAffordable(pid){
+  const rem=remainingBudget(pid), count=rosterCount(pid);
+  const reserveFor = Math.max(0, MIN_ROSTER-(count+1)); // picks still needed AFTER this one
+  return rem - reserveFor;
+}
+function isDrafted(name){ return league.picks.some(pk=>pk.pokemonName===name); }
+function whoDrafted(name){ const pk=league.picks.find(p=>p.pokemonName===name); return pk?league.players.find(pl=>pl.id===pk.playerId):null; }
+
+// snake order: round-robin alternating direction
+function onClockPlayerId(){
+  const ord=league.order; const n=ord.length; if(!n) return null;
+  const made=league.picks.length;
+  const round=Math.floor(made/n);
+  const idx=made%n;
+  const pos = round%2===0 ? idx : (n-1-idx);
+  return ord[pos];
+}
+function snakeRoundInfo(){
+  const n=league.order.length||1; const made=league.picks.length;
+  return { round:Math.floor(made/n)+1, pickInRound:(made%n)+1, total:n };
+}
+
+function draftPokemon(name, pid){
+  if(typeof isGuest==='function' && isGuest()){ net.request({kind:'draft', name}); return; }
+  if(typeof isHost==='function' && isHost()){ pid = onClockPlayerId(); } // online drafts always go to whoever is on the clock
+  if(isDrafted(name)){ toast(name+" is already drafted.", true); return; }
+  const p=POKE_BY_NAME[name]; if(!p) return;
+  const player=league.players.find(x=>x.id===pid);
+  if(!player){ toast("Pick a team to draft for first.", true); return; }
+  if(remainingBudget(pid) < p.cost){ toast(player.teamName+" can't afford "+name+".", true); return; }
+  if(p.cost > maxAffordable(pid)){
+    const need=Math.max(0, MIN_ROSTER-(rosterCount(pid)+1));
+    toast(`That leaves ${player.teamName} short — needs ${need} more pick${need!==1?'s':''} (≥1 pt each).`, true); return;
+  }
+  league.picks.push({ pokemonName:name, playerId:pid, cost:p.cost, pickNumber:league.picks.length+1 });
+  save();
+  // advance "drafting for" to the next on-the-clock team
+  ui.draftFor = onClockPlayerId();
+  render();
+  toast(player.teamName+" drafted "+name+" ("+p.cost+" pts)");
+}
+function undoLastPick(){
+  if(typeof canManage==='function' && !canManage()){ toast("Only the host can undo picks.",true); return; }
+  if(!league.picks.length){ toast("No picks to undo.", true); return; }
+  const last=league.picks.pop();
+  save(); ui.draftFor=onClockPlayerId(); render();
+  toast("Removed "+last.pokemonName+".");
+}
+function removePick(name){
+  if(typeof canManage==='function' && !canManage()){ toast("Only the host can release picks.",true); return; }
+  const i=league.picks.findIndex(pk=>pk.pokemonName===name);
+  if(i<0) return;
+  league.picks.splice(i,1);
+  league.picks.forEach((pk,k)=>pk.pickNumber=k+1);
+  save(); ui.draftFor=onClockPlayerId(); render();
+}
+
+/* ======================= PLAYERS ======================= */
+function addPlayerToLeague(){
+  if(typeof canManage==='function' && !canManage()){ toast("Only the host can add teams.",true); return; }
+  if(league.players.length>=MAX_PLAYERS){ toast("Maximum of "+MAX_PLAYERS+" teams.", true); return; }
+  const p=newPlayer(league.players.length);
+  league.players.push(p); league.order.push(p.id);
+  save(); render();
+}
+function removeLastPlayer(){
+  if(typeof canManage==='function' && !canManage()){ toast("Only the host can remove teams.",true); return; }
+  if(league.players.length<=MIN_PLAYERS){ toast("Minimum of "+MIN_PLAYERS+" teams.", true); return; }
+  const last=league.players[league.players.length-1];
+  if(rosterOf(last.id).length && !confirm(`${last.teamName} has drafted Pokémon. Remove the team and release them?`)) return;
+  league.picks=league.picks.filter(pk=>pk.playerId!==last.id);
+  league.order=league.order.filter(id=>id!==last.id);
+  if(typeof net!=='undefined' && net.claims) delete net.claims[last.id];
+  league.players.pop();
+  league.picks.forEach((pk,k)=>pk.pickNumber=k+1);
+  save(); render();
+}
+function moveOrder(pid, dir){
+  if(typeof canManage==='function' && !canManage()){ return; }
+  const i=league.order.indexOf(pid); const j=i+dir;
+  if(j<0||j>=league.order.length) return;
+  [league.order[i],league.order[j]]=[league.order[j],league.order[i]];
+  save(); render();
+}
+function setTeamName(pid,v){ if(typeof canManage==='function'&&!canManage())return; const p=league.players.find(x=>x.id===pid); if(p){p.teamName=v;save();updateHeaderBits();} }
+function setCoachName(pid,v){ if(typeof canManage==='function'&&!canManage())return; const p=league.players.find(x=>x.id===pid); if(p){p.name=v;save();} }
+
+/* ======================= RENDER ======================= */
+function typeColor(t){ return getComputedStyle(document.documentElement).getPropertyValue('--t-'+t.toLowerCase()).trim(); }
+function bst(p){ return p.stats?STAT_KEYS.reduce((s,[k])=>s+(p.stats[k]||0),0):0; }
+function statColor(v){ if(v>=130)return"#3fe0a0"; if(v>=100)return"#7fd957"; if(v>=80)return"#f7c948"; if(v>=55)return"#ff9f43"; return"#ff6b81"; }
+function initials(name){ const c=name.replace(/^(Mega |Alolan |Galarian |Hisuian |Paldean )/,'').trim(); return c.slice(0,2).toUpperCase(); }
+function spriteURL(p){ return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${p.spriteId}.png`; }
+function spritePixelURL(p){ return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.spriteId}.png`; }
+
+/* ===== Schedule / Playoffs / KO tracker ===== */
+function ensureExtras(){
+  if(!league.playoffs) league.playoffs={seeds:Object.assign({},DEFAULT_SEEDS),winners:{}};
+  if(!league.playoffs.seeds) league.playoffs.seeds=Object.assign({},DEFAULT_SEEDS);
+  if(!league.playoffs.winners) league.playoffs.winners={};
+  if(!Array.isArray(league.kos)) league.kos=[];
+}
+function coachPill(name,cls){
+  const c=COACH_BY_NAME[name]||{color:'#2a3350',dark:false};
+  return `<div class="${cls||'mpill'}" style="background:${c.color};color:${c.dark?'#0a0e1a':'#fff'}">${esc(name)}</div>`;
+}
+function renderSchedule(){
+  const el=document.getElementById('schedGrid'); if(!el) return;
+  el.innerHTML=SCHEDULE.map(w=>`<div class="sc-card"><div class="sc-head"><div class="sc-badge">${w.n}</div><div class="sc-title">WEEK ${w.n}</div><div class="sc-date">${esc(w.date.toUpperCase())}</div></div><div class="sc-body">${w.m.map(pr=>`<div class="mrow">${coachPill(pr[0])}<span class="mvs">vs</span>${coachPill(pr[1])}</div>`).join('')}</div></div>`).join('');
+}
+function pfSeed(n){ ensureExtras(); return league.playoffs.seeds[n]||null; }
+function pfWinner(id){ ensureExtras(); return league.playoffs.winners[id]||null; }
+function pfParts(id){ return PLAYOFF_BY_ID[id].feed.map(resolveFeed); }
+function resolveFeed(tok){
+  const i=tok.indexOf(':'), k=tok.slice(0,i), v=tok.slice(i+1);
+  if(k==='seed') return pfSeed(+v);
+  if(k==='win') return pfWinner(v);
+  if(k==='lose'){ const w=pfWinner(v); if(!w) return null; const p=pfParts(v); if(!p[0]||!p[1]) return null; return w===p[0]?p[1]:p[0]; }
+  return null;
+}
+function feedLabel(tok){ const i=tok.indexOf(':'),k=tok.slice(0,i),v=tok.slice(i+1); return k==='seed'?('Seed '+v):k==='win'?('Winner '+v):k==='lose'?('Loser '+v):'—'; }
+function reconcilePlayoffs(){
+  ensureExtras(); let changed=true,guard=0;
+  while(changed && guard++<14){ changed=false;
+    for(const m of PLAYOFF_MATCHES){ const w=league.playoffs.winners[m.id]; if(!w) continue;
+      if(!pfParts(m.id).includes(w)){ delete league.playoffs.winners[m.id]; changed=true; } } }
+}
+function setPlayoffWinner(id,name){
+  if(typeof canManage==='function'&&!canManage()) return; ensureExtras();
+  if(!pfParts(id).includes(name)) return;
+  if(league.playoffs.winners[id]===name) delete league.playoffs.winners[id];
+  else league.playoffs.winners[id]=name;
+  reconcilePlayoffs(); save(); render();
+}
+function setPlayoffSeed(n,name){
+  if(typeof canManage==='function'&&!canManage()) return; ensureExtras();
+  const s=league.playoffs.seeds, prev=Object.keys(s).find(k=>s[k]===name);
+  if(prev && +prev!==n){ s[prev]=s[n]; }
+  s[n]=name; reconcilePlayoffs(); save(); render();
+}
+function resetPlayoffs(){ if(typeof canManage==='function'&&!canManage())return; ensureExtras(); league.playoffs.winners={}; save(); render(); toast('Bracket reset.'); }
+function renderPlayoffs(){
+  ensureExtras();
+  const seedEl=document.getElementById('seedPanel'), brEl=document.getElementById('bracket'), note=document.getElementById('pfHostNote');
+  if(!seedEl||!brEl) return;
+  const canEdit=(typeof canManage!=='function')||canManage();
+  if(note) note.textContent = canEdit?'':'Host controls the bracket';
+  const s=league.playoffs.seeds;
+  const opt=(sel)=>COACHES.map(c=>`<option value="${escAttr(c.name)}" ${c.name===sel?'selected':''}>${esc(c.name)}</option>`).join('');
+  seedEl.innerHTML=`<div class="seed-panel"><h3>Seeding — final regular-season order</h3><div class="seed-grid">${[1,2,3,4,5,6,7,8].map(n=>{const c=COACH_BY_NAME[s[n]]||{color:'#2a3350',dark:false};return `<div class="seed-cell"><div class="seed-no">${n}</div>${canEdit?`<select data-pfseed="${n}">${opt(s[n])}</select>`:`<div class="seed-static" style="background:${c.color};color:${c.dark?'#0a0e1a':'#fff'}">${esc(s[n]||'—')}</div>`}</div>`;}).join('')}</div>${canEdit?`<div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn ghost sm" data-pfreset>Reset bracket</button></div>`:''}</div>`;
+  const slot=(id,idx)=>{ const parts=pfParts(id), nm=parts[idx], win=pfWinner(id), feed=PLAYOFF_BY_ID[id].feed[idx], isWin=nm&&win===nm, clickable=canEdit&&!!nm, c=nm?(COACH_BY_NAME[nm]||{color:'#2a3350'}):null;
+    return `<div class="bk-slot ${isWin?'win':''} ${clickable?'pick':''}" ${clickable?`data-pfwin="${escAttr(id+'|'+nm)}"`:''}>${c?`<span class="bk-dot" style="background:${c.color}"></span>`:''}<span class="bk-name ${nm?'':'tbd'}">${nm?esc(nm):feedLabel(feed)}</span>${isWin?'<span class="bk-check">✓</span>':''}</div>`; };
+  const box=(id,extra)=>{ const m=PLAYOFF_BY_ID[id]; return `<div class="bk-match ${extra||''}"><div class="bk-mhead"><span>Match ${id}</span><span>${esc(m.date)}</span></div>${slot(id,0)}${slot(id,1)}</div>`; };
+  const champ=pfWinner('K');
+  brEl.innerHTML=`<div class="bk-col"><div class="bk-round">Round 1 · Aug 22</div>${box('A')}${box('B')}${box('C')}${box('D')}</div><div class="bk-col"><div class="bk-round">Winners · Aug 29</div>${box('E')}${box('F')}</div><div class="bk-col"><div class="bk-round">Champ Final · Sept 5</div>${box('I')}</div><div class="bk-col finals"><div class="bk-round">Grand Final · Sep 12</div>${box('K','final')}${champ?`<div class="champ-tag">🏆 ${esc(champ)} wins</div>`:''}</div><div class="bk-col"><div class="bk-round">Consolation · Sept 5</div>${box('J')}</div><div class="bk-col"><div class="bk-round">Consolation · Aug 29</div>${box('G')}${box('H')}</div>`;
+}
+function koAdd(name){ if(typeof canManage==='function'&&!canManage())return; ensureExtras(); if(league.kos.some(k=>k.name===name))return; if(!POKE_BY_NAME[name])return; league.kos.push({name,ko:0}); save(); render(); }
+function koBump(name,delta){ if(typeof canManage==='function'&&!canManage())return; ensureExtras(); const k=league.kos.find(x=>x.name===name); if(!k)return; k.ko=Math.max(0,(k.ko|0)+delta); save(); render(); }
+function koRemove(name){ if(typeof canManage==='function'&&!canManage())return; ensureExtras(); league.kos=league.kos.filter(x=>x.name!==name); save(); render(); }
+function renderKOs(){
+  ensureExtras();
+  const addRow=document.getElementById('koAddRow'), list=document.getElementById('koList'), note=document.getElementById('koHostNote');
+  if(!list) return;
+  const canEdit=(typeof canManage!=='function')||canManage();
+  if(note) note.textContent=canEdit?'':'Host updates the counts';
+  if(addRow) addRow.innerHTML=canEdit?`<button class="btn" data-koadd>＋ Add Pokémon</button><span style="font-size:12px;color:var(--muted)">Tap ＋ / − to change each count · auto-sorted by most KOs</span>`:'';
+  const rows=league.kos.slice().sort((a,b)=>(b.ko-a.ko)||a.name.localeCompare(b.name));
+  if(!rows.length){ list.innerHTML=`<div class="ko-empty">No Pokémon tracked yet.${canEdit?' Hit “＋ Add Pokémon” to start.':''}</div>`; return; }
+  list.innerHTML=rows.map(k=>{ const p=POKE_BY_NAME[k.name]; const img=p?`<img src="${spriteURL(p)}" alt="" loading="lazy">`:'<div></div>';
+    return `<div class="ko-card">${canEdit?`<button class="ko-rm" data-korm="${escAttr(k.name)}" title="Remove">✕</button>`:''}${img}<div class="ko-name">${esc(k.name)}</div><div class="ko-ctrl">${canEdit?`<button class="ko-btn minus" data-kobump="${escAttr(k.name+'|-1')}">−</button>`:''}<div class="ko-count">${k.ko|0}</div>${canEdit?`<button class="ko-btn plus" data-kobump="${escAttr(k.name+'|1')}">＋</button>`:''}</div></div>`; }).join('');
+}
+function openKoPicker(){
+  if(typeof canManage==='function'&&!canManage())return;
+  const existing=new Set(league.kos.map(k=>k.name));
+  let pool=POKEMON.filter(p=>!existing.has(p.name));
+  openModal(`<h3>Add Pokémon to KO tracker</h3><input id="koSearch" placeholder="Search Pokémon…" style="width:100%;margin:10px 0;padding:9px 11px;background:var(--bg);border:1px solid var(--line);border-radius:8px;color:var(--text);font-size:14px"><div id="koPickList" class="ko-pick-list"></div><div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="btn" data-close>Done</button></div>`);
+  const draw=(q)=>{ const ql=(q||'').toLowerCase(); const items=pool.filter(p=>p.name.toLowerCase().includes(ql)).slice(0,80);
+    const bx=document.getElementById('koPickList'); if(!bx) return;
+    bx.innerHTML=items.map(p=>`<button class="ko-pick" data-kopick="${escAttr(p.name)}"><img src="${spritePixelURL(p)}" alt="" loading="lazy"><span>${esc(p.name)}</span></button>`).join('')||'<div style="color:var(--muted);padding:10px">No matches.</div>';
+    bx.querySelectorAll('[data-kopick]').forEach(b=>b.onclick=()=>{ const nm=b.dataset.kopick; koAdd(nm); pool=pool.filter(p=>p.name!==nm); draw(document.getElementById('koSearch').value); toast(nm+' added'); }); };
+  draw('');
+  const si=document.getElementById('koSearch'); if(si){ si.addEventListener('input',e=>draw(e.target.value)); si.focus(); }
+}
+
+function render(){
+  if(typeof netActive==='function' && netActive()) ui.draftFor=onClockPlayerId();
+  if(typeof maybeAnnounceComplete==='function') maybeAnnounceComplete();
+  renderClock();
+  renderDraftForSelect();
+  renderTypeFilters();
+  renderBoard();
+  renderTeams();
+  updateHeaderBits();
+  if(typeof renderNet==='function') renderNet();
+  if(typeof renderTrade==='function') renderTrade();
+  if(typeof renderFA==='function') renderFA();
+  if(typeof renderSchedule==='function') renderSchedule();
+  if(typeof renderPlayoffs==='function') renderPlayoffs();
+  if(typeof renderKOs==='function') renderKOs();
+}
+function updateHeaderBits(){
+  document.getElementById('leagueName').textContent=league.name;
+  document.getElementById('teamCountBadge').textContent=league.players.length;
+  document.getElementById('playerNum').textContent=league.players.length;
+  document.getElementById('addPlayer').disabled=league.players.length>=MAX_PLAYERS;
+  document.getElementById('remPlayer').disabled=league.players.length<=MIN_PLAYERS;
+}
+
+function renderClock(){
+  const ocId=onClockPlayerId();
+  const oc=league.players.find(p=>p.id===ocId);
+  const info=snakeRoundInfo();
+  document.getElementById('onClockName').textContent=oc?oc.teamName:"—";
+  document.getElementById('onClockRound').textContent=oc?`Round ${info.round} · Pick ${info.pickInRound} of ${info.total}`:"";
+  // snake nodes
+  const track=document.getElementById('snakeTrack'); track.innerHTML="";
+  orderedPlayers().forEach((p,i)=>{
+    const node=document.createElement('div');
+    node.className="snode"+(p.id===ocId?" cur":"");
+    const cnt=rosterCount(p.id), rem=remainingBudget(p.id);
+    node.innerHTML=`<div class="pos">SLOT ${i+1}</div>
+      <div class="nm">${esc(p.teamName)}</div>
+      <div class="mini"><span>${cnt}/${MIN_ROSTER} mons</span><span class="pts">${rem} pts</span></div>`;
+    track.appendChild(node);
+  });
+}
+
+function renderDraftForSelect(){
+  const sel=document.getElementById('draftForSel');
+  const online = typeof netActive==='function' && netActive();
+  if(online){
+    ui.draftFor=onClockPlayerId();
+    const oc=league.players.find(p=>p.id===ui.draftFor);
+    sel.innerHTML=`<option>${oc?escAttr(oc.teamName):'—'}</option>`;
+    sel.disabled=true; sel.classList.add('locked');
+    return;
+  }
+  sel.disabled=false; sel.classList.remove('locked');
+  if(ui.draftFor==null || !league.players.some(p=>p.id===ui.draftFor)) ui.draftFor=onClockPlayerId();
+  sel.innerHTML="";
+  orderedPlayers().forEach((p,i)=>{
+    const o=document.createElement('option');
+    o.value=p.id; o.textContent=`${p.teamName}  ·  ${remainingBudget(p.id)} pts  ·  ${rosterCount(p.id)}/${MIN_ROSTER}`;
+    if(p.id===ui.draftFor) o.selected=true;
+    sel.appendChild(o);
+  });
+}
+
+function renderTypeFilters(){
+  const box=document.getElementById('typeFilters');
+  if(box.childElementCount) { // just refresh "on" state
+    [...box.children].forEach(c=>{ const t=c.dataset.t; c.classList.toggle('on',ui.types.has(t));
+      c.style.background=ui.types.has(t)?typeColor(t):""; });
+    return;
+  }
+  TYPE_LIST.forEach(t=>{
+    const b=document.createElement('button'); b.className="fchip"; b.dataset.t=t; b.textContent=t;
+    b.onclick=()=>{ ui.types.has(t)?ui.types.delete(t):ui.types.add(t); renderTypeFilters(); renderBoard(); };
+    if(ui.types.has(t)){ b.classList.add('on'); b.style.background=typeColor(t); }
+    box.appendChild(b);
+  });
+}
+
+function filteredPokemon(){
+  let list=POKEMON.slice();
+  const q=ui.search.trim().toLowerCase();
+  if(q) list=list.filter(p=>p.name.toLowerCase().includes(q));
+  if(ui.types.size) list=list.filter(p=>p.types.some(t=>ui.types.has(t)));
+  if(ui.avail==="avail") list=list.filter(p=>!isDrafted(p.name));
+  const s=ui.sort;
+  list.sort((a,b)=>{
+    if(s==="cost-desc") return b.cost-a.cost || a.name.localeCompare(b.name);
+    if(s==="cost-asc") return a.cost-b.cost || a.name.localeCompare(b.name);
+    if(s==="bst-desc") return bst(b)-bst(a) || a.name.localeCompare(b.name);
+    return a.name.localeCompare(b.name);
+  });
+  return list;
+}
+
+function renderBoard(){
+  const board=document.getElementById('board');
+  const list=filteredPokemon();
+  board.innerHTML="";
+  if(!list.length){ board.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="big">No Pokémon match</div><div>Try clearing filters or the search box.</div></div>`; return; }
+  const forId=ui.draftFor; const maxAff=forId?maxAffordable(forId):0; const remForId=forId?remainingBudget(forId):0;
+  const canDraftNow = (typeof canIDraftNow!=='function') || canIDraftNow();
+  const frag=document.createDocumentFragment();
+  list.forEach(p=>{
+    const drafted=isDrafted(p.name);
+    const owner=drafted?whoDrafted(p.name):null;
+    const affordable = forId && p.cost<=maxAff && p.cost<=remForId;
+    const enabled = affordable && canDraftNow;
+    const card=document.createElement('div');
+    card.className="pcard"+(drafted?" drafted":"")+(!drafted&&!affordable?" unaffordable":"");
+    const isMega=p.name.startsWith("Mega ");
+    const statsOpen=ui.openStats.has(p.name);
+    card.innerHTML=`
+      <div class="toprow">
+        <div class="cost-badge">${p.cost}<small>PTS</small></div>
+        ${isMega?'<div class="mega-badge">MEGA</div>':''}
+      </div>
+      <div class="sprite-wrap">
+        <img src="${spriteURL(p)}" alt="${esc(p.name)}" loading="lazy"
+          onerror="this.onerror=null;this.src='${spritePixelURL(p)}';this.onerror=function(){spriteFail(this,'${escAttrJs(p.name)}','${p.types[0]}')}">
+      </div>
+      <div class="pname">${esc(p.name)}</div>
+      <div class="types">${p.types.map(t=>`<span class="tchip" style="background:${typeColor(t)}">${t}</span>`).join('')}</div>
+      <div class="stats ${statsOpen?'open':''}" data-stats="${escAttr(p.name)}">${statsHTML(p)}</div>
+      <div class="foot">
+        <button class="statbtn" data-toggle="${escAttr(p.name)}">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
+          ${statsOpen?'Hide':'Stats · BST '+bst(p)}
+        </button>
+        ${drafted
+          ? `<div class="drafted-tag"><span class="dot" style="background:${typeColor((owner&&POKE_BY_NAME[rosterOf(owner.id)[0]?.pokemonName]?.types[0])||p.types[0])}"></span>${esc(owner?owner.teamName:'Drafted')}</div>`
+          : ((ui.faMode && typeof postDraft==='function' && postDraft())
+            ? `<button class="draft-btn fa" data-faadd="${escAttr(p.name)}">+ Swap in</button>`
+            : `<button class="draft-btn" data-draft="${escAttr(p.name)}" ${enabled?'':'disabled'}>${enabled?'Draft':(!canDraftNow?'Draft':(remForId<p.cost?'Too expensive':'Reserve violated'))}</button>`)}
+      </div>`;
+    frag.appendChild(card);
+  });
+  board.appendChild(frag);
+}
+
+function statsHTML(p){
+  if(!p.stats) return '<div class="note">No stat data.</div>';
+  const total=bst(p);
+  let rows=STAT_KEYS.map(([k,lbl])=>{
+    const v=p.stats[k]||0; const w=Math.min(100,(v/180)*100);
+    return `<div class="srow"><span class="k">${lbl}</span><span class="n">${v}</span>
+      <span class="sbar"><i style="width:${w}%;background:${statColor(v)}"></i></span></div>`;
+  }).join('');
+  const ab=(p.abilities||[]).map(a=>`<span class="a">${esc(a)}</span>`).join('');
+  return `<div class="bst"><span class="ttl">Base Stat Total</span><span class="val">${total}</span></div>
+    ${rows}
+    <div class="abil">${ab||'<span class="a">—</span>'}</div>
+    ${p.customMega?'<div class="note">Custom Mega — stats &amp; abilities shown are the base form\'s.</div>':''}`;
+}
+
+/* ----- teams tab ----- */
+function renderTeams(){
+  const grid=document.getElementById('teamGrid'); grid.innerHTML="";
+  const online = typeof netActive==='function' && netActive();
+  const manage = (typeof canManage!=='function') || canManage();   // edit identity / reorder / release picks
+  const ocId = onClockPlayerId();
+  orderedPlayers().forEach((p,idx)=>{
+    const roster=rosterOf(p.id).map(pk=>({pk,poke:POKE_BY_NAME[pk.pokemonName]}));
+    const spent=spentBy(p.id), rem=remainingBudget(p.id), count=roster.length;
+    const pct=(spent/BUDGET)*100;
+    const metMin=count>=MIN_ROSTER;
+    // --- multiplayer claim state ---
+    let claimHTML='', mine=false, isOc=(online && p.id===ocId);
+    if(online){
+      const holder=net.claims[p.id];
+      mine = holder && holder.peerId===net.selfId;
+      const holderOnline = holder && (holder.peerId===net.selfId || net.online[holder.peerId]);
+      if(mine){
+        claimHTML=`<div class="claimrow mine"><span class="who"><span class="cd on"></span>You${isHost()?' · host':''}</span><button class="cbtn ghost" data-release="${p.id}">Release slot</button></div>`;
+      } else if(holder && holderOnline){
+        claimHTML=`<div class="claimrow taken"><span class="who"><span class="cd on"></span>${esc(holder.name)}</span><span class="ctag">claimed</span></div>`;
+      } else {
+        claimHTML=`<div class="claimrow open"><span class="who"><span class="cd off"></span>${holder?esc(holder.name)+' · offline':'Open slot'}</span><button class="cbtn primary" data-claim="${p.id}">Claim this slot</button></div>`;
+      }
+    }
+    const canEditId = manage || (online && mine);   // host/offline can edit anyone; a player can edit their own
+    const ro = canEditId ? '' : 'readonly';
+    const canTradeHere = (typeof postDraft==='function' && postDraft()) && league.players.some(o=>o.id!==p.id && typeof iControlTeam==='function' && iControlTeam(o.id));
+    const card=document.createElement('div'); card.className="tcard"+(isOc?" oc":"")+(mine?" mine":"");
+    card.innerHTML=`
+      <div class="head">
+        <div class="order-badge">SLOT ${idx+1}${isOc?' · ON CLOCK':''}</div>
+        <div class="logo"${canEditId?` data-logo="${p.id}"`:''}>
+          ${p.logo?`<img src="${p.logo}" alt="logo">`:`<span class="ph">${esc(initials(p.teamName||'T'))}</span>`}
+          ${canEditId?`<div class="cam"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span>${p.logo?'Change':'Add logo'}</span></div>`:''}
+        </div>
+        <div class="tinfo">
+          <input class="tname-in" data-tname="${p.id}" value="${escAttr(p.teamName)}" placeholder="Team name" spellcheck="false" ${ro}>
+          <input class="pname-in" data-pname="${p.id}" value="${escAttr(p.name)}" placeholder="Coach name" spellcheck="false" ${ro}>
+        </div>
+      </div>
+      ${claimHTML}
+      <div class="budget">
+        <div class="bud-top">
+          <span class="left">Points used</span>
+          <span class="big"><span class="acc">${spent}</span><span class="sm"> / ${BUDGET}</span></span>
+        </div>
+        <div class="budbar"><i style="width:${pct}%"></i></div>
+        <div class="meta">
+          <span class="pill ${metMin?'ok':'short'}"><span>Roster</span><b>${count}/${MIN_ROSTER}</b></span>
+          <span class="pill"><span>Left</span><b style="color:var(--accent2)">${rem} pts</b></span>
+          <span class="pill"><span>Max next pick</span><b>${Math.max(0,maxAffordable(p.id))}</b></span>
+          <div style="flex:1"></div>
+          ${canTradeHere?`<button class="rnd-btn sm trade-btn" data-trade="${p.id}" title="Propose a trade with this team" style="width:auto;padding:0 11px;height:26px;font-size:11px;font-weight:700;letter-spacing:.3px">⇄ Trade</button>`:''}
+          <button class="rnd-btn sm" data-export="${p.id}" title="Save this team as a PNG image" style="width:auto;padding:0 11px;height:26px;font-size:11px;font-weight:700;letter-spacing:.3px">⤓ PNG</button>
+          ${manage?`<button class="rnd-btn sm" data-up="${p.id}" title="Move up" ${idx===0?'disabled':''} style="width:26px;height:26px;font-size:14px">▲</button>
+          <button class="rnd-btn sm" data-down="${p.id}" title="Move down" ${idx===league.players.length-1?'disabled':''} style="width:26px;height:26px;font-size:14px">▼</button>`:''}
+        </div>
+      </div>
+      <div class="roster">
+        ${roster.length?roster.map(({pk,poke})=>`
+          <div class="ritem">
+            <img src="${spritePixelURL(poke)}" alt="" onerror="this.onerror=null;this.replaceWith(rfall('${escAttrJs(poke.name)}','${poke.types[0]}'))">
+            <div class="rn"><div class="nm">${esc(poke.name)}</div>
+              <div class="ty">${poke.types.map(t=>`<span style="background:${typeColor(t)}">${t}</span>`).join('')}</div></div>
+            <div class="rc">${pk.cost}</div>
+            ${manage?`<button class="rx" data-remove="${escAttr(poke.name)}" title="Release">×</button>`:''}
+          </div>`).join(''):`<div class="r-empty">No Pokémon drafted yet</div>`}
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+/* ----- export a team as a single PNG ----- */
+async function exportTeamImage(pid){
+  const p=league.players.find(x=>x.id===pid); if(!p) return;
+  toast('Building image…');
+  try{ await document.fonts.ready; }catch(e){}
+  const roster=rosterOf(p.id).map(pk=>({pk,poke:POKE_BY_NAME[pk.pokemonName]})).filter(r=>r.poke);
+  const cs=getComputedStyle(document.documentElement); const col=n=>(cs.getPropertyValue(n)||'').trim();
+  const C={bg:col('--bg')||'#0a0e1a',panel:col('--panel')||'#121829',panel2:col('--panel2')||'#1a2236',
+    text:col('--text')||'#eaf0ff',muted:col('--muted')||'#8f9bbd',line:col('--line')||'#26304d',
+    accent:col('--accent')||'#28d6ff',accent2:col('--accent2')||'#ffb22e'};
+  const loadImg=src=>new Promise(res=>{ const im=new Image(); im.crossOrigin='anonymous'; im.onload=()=>res(im); im.onerror=()=>res(null); im.src=src; });
+  const imgs=await Promise.all([ p.logo?loadImg(p.logo):Promise.resolve(null), ...roster.map(r=>loadImg(spriteURL(r.poke))) ]);
+  const logoImg=imgs[0], sprites=imgs.slice(1);
+
+  const W=1040, pad=44, cols=5, cellW=(W-pad*2)/cols, cellH=190;
+  const rows=Math.max(1,Math.ceil(roster.length/cols)), headerH=176, footerH=58;
+  const H=pad+headerH+18+rows*cellH+footerH+pad, scale=2;
+  const cv=document.createElement('canvas'); cv.width=W*scale; cv.height=H*scale;
+  const ctx=cv.getContext('2d'); ctx.scale(scale,scale);
+  const rr=(x,y,w,h,r)=>{ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); };
+
+  ctx.fillStyle=C.bg; ctx.fillRect(0,0,W,H);
+  const g=ctx.createLinearGradient(0,0,W,0); g.addColorStop(0,C.accent); g.addColorStop(1,C.accent2);
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,6);
+
+  rr(pad,pad,W-pad*2,headerH,18); ctx.fillStyle=C.panel; ctx.fill();
+  const lx=pad+22, ly=pad+22, ls=headerH-44;
+  rr(lx,ly,ls,ls,16); ctx.save(); ctx.clip();
+  if(logoImg){ ctx.drawImage(logoImg,lx,ly,ls,ls); }
+  else { ctx.fillStyle=C.panel2; ctx.fillRect(lx,ly,ls,ls); ctx.fillStyle=C.accent; ctx.font='700 44px Saira,sans-serif'; ctx.textAlign='center'; ctx.fillText(initials(p.teamName||'T'),lx+ls/2,ly+ls/2+15); }
+  ctx.restore(); ctx.textAlign='left';
+  rr(lx,ly,ls,ls,16); ctx.strokeStyle=C.line; ctx.lineWidth=1.5; ctx.stroke();
+
+  const tx=lx+ls+26;
+  ctx.fillStyle=C.text; ctx.font='800 40px Saira,sans-serif';
+  let tn=p.teamName||'Team', fs=40; while(ctx.measureText(tn).width>(W-pad*2)-(tx-pad)-30 && fs>20){ fs-=2; ctx.font=`800 ${fs}px Saira,sans-serif`; }
+  ctx.fillText(tn,tx,ly+44);
+  ctx.fillStyle=C.muted; ctx.font='600 19px Inter,sans-serif';
+  ctx.fillText(p.name?('Coach: '+p.name):'—',tx,ly+76);
+  const spent=spentBy(p.id), rem=remainingBudget(p.id), cnt=roster.length;
+  const chips=[['Points',spent+' / '+BUDGET],['Left',rem+' pts'],['Roster',cnt+' / '+MIN_ROSTER]];
+  let cxp=tx; const cyy=ly+98, chH=40;
+  chips.forEach(([k,v],i)=>{
+    ctx.font='600 13px Inter,sans-serif'; const lw=ctx.measureText(k+'  ').width;
+    ctx.font='800 16px Saira,sans-serif'; const vw=ctx.measureText(v).width; const cw=lw+vw+28;
+    rr(cxp,cyy,cw,chH,10); ctx.fillStyle=C.panel2; ctx.fill();
+    ctx.fillStyle=C.muted; ctx.font='600 13px Inter,sans-serif'; ctx.fillText(k+'  ',cxp+14,cyy+26);
+    ctx.fillStyle=(i===1?C.accent2:C.accent); ctx.font='800 16px Saira,sans-serif'; ctx.fillText(v,cxp+14+lw,cyy+26);
+    cxp+=cw+12;
+  });
+
+  const gy=pad+headerH+18;
+  roster.forEach((r,i)=>{
+    const cxn=pad+(i%cols)*cellW, cyn=gy+Math.floor(i/cols)*cellH;
+    rr(cxn+6,cyn+6,cellW-12,cellH-12,14); ctx.fillStyle=C.panel; ctx.fill(); ctx.strokeStyle=C.line; ctx.lineWidth=1; ctx.stroke();
+    const sp=sprites[i], sw=104, sh=104, sx=cxn+cellW/2-sw/2, sy=cyn+14;
+    if(sp){ ctx.drawImage(sp,sx,sy,sw,sh); }
+    else { ctx.fillStyle=typeColor(r.poke.types[0])||'#555'; ctx.beginPath(); ctx.arc(cxn+cellW/2,sy+sh/2,40,0,7); ctx.fill(); ctx.fillStyle='#fff'; ctx.font='800 24px Saira'; ctx.textAlign='center'; ctx.fillText(initials(r.poke.name),cxn+cellW/2,sy+sh/2+8); ctx.textAlign='left'; }
+    rr(cxn+cellW-46,cyn+14,32,24,7); ctx.fillStyle=C.accent; ctx.fill();
+    ctx.fillStyle='#04121a'; ctx.font='800 15px Saira'; ctx.textAlign='center'; ctx.fillText(String(r.pk.cost),cxn+cellW-46+16,cyn+31);
+    ctx.fillStyle=C.text; ctx.font='700 16px Inter,sans-serif';
+    let nm=r.poke.name, nfs=16; while(ctx.measureText(nm).width>cellW-26 && nfs>10){ nfs--; ctx.font=`700 ${nfs}px Inter,sans-serif`; }
+    ctx.fillText(nm,cxn+cellW/2,cyn+140);
+    ctx.font='700 11px Inter,sans-serif';
+    const tw=r.poke.types.reduce((a,t)=>a+ctx.measureText(t.toUpperCase()).width+16+6,0)-6;
+    let txp=cxn+cellW/2-tw/2;
+    r.poke.types.forEach(t=>{ const lab=t.toUpperCase(); const w=ctx.measureText(lab).width+16; rr(txp,cyn+152,w,20,6); ctx.fillStyle=typeColor(t)||'#555'; ctx.fill(); ctx.fillStyle='#0a0e1a'; ctx.fillText(lab,txp+w/2,cyn+166); txp+=w+6; });
+    ctx.textAlign='left';
+  });
+
+  ctx.fillStyle=C.muted; ctx.font='600 14px Inter,sans-serif'; ctx.textAlign='left';
+  ctx.fillText(league.name||'Draft League',pad,H-pad+2);
+  ctx.textAlign='right'; ctx.fillStyle=C.accent; ctx.font='800 14px Saira,sans-serif';
+  ctx.fillText('CHAMPIONS DRAFT LEAGUE',W-pad,H-pad+2); ctx.textAlign='left';
+
+  cv.toBlob(b=>{
+    if(!b){ toast('Export failed — try again.',true); return; }
+    const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+    a.download=((p.teamName||'team').replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'')||'team')+'.png';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+    toast('Saved '+a.download);
+  },'image/png');
+}
+
+/* ----- draft-complete notification ----- */
+function allRostersFull(){ return league.players.length>0 && league.players.every(p=>rosterCount(p.id)>=MIN_ROSTER); }
+function maybeAnnounceComplete(){
+  if((typeof canManage!=='function'||canManage()) && allRostersFull() && !league.completeAnnounced){ league.completeAnnounced=true; save(); }
+  if(league.completeAnnounced && !ui.completeShown){ ui.completeShown=true; showDraftCompleteModal(); }
+  else if(!league.completeAnnounced && ui.completeShown){ ui.completeShown=false; }
+}
+function showDraftCompleteModal(){
+  const rows=orderedPlayers().map(p=>`<div class="dc-row"><span>${esc(p.teamName)}</span><b>${rosterCount(p.id)} mons · ${spentBy(p.id)} pts</b></div>`).join('');
+  openModal(`<h3 style="text-align:center;margin-bottom:6px">🎉 Draft complete!</h3>
+    <p style="text-align:center">Every team has reached ${MIN_ROSTER} Pokémon. Final rosters are set — well drafted!</p>
+    <div class="dc-list">${rows}</div>
+    <p style="text-align:center;font-size:12px;color:var(--muted)">Post-draft tools are now unlocked: propose <b>Trades</b> from the Teams tab, or hit <b>⇄ Free agency</b> on the board to swap a pick for an available Pokémon. You can also export any roster as an image.</p>
+    <div class="row"><button class="btn primary" data-close>Done</button></div>`);
+}
+
+
+function spriteFail(img,name,type){
+  const d=document.createElement('div'); d.className="sprite-fallback";
+  d.style.background=typeColor(type)||'#555'; d.textContent=initials(name);
+  img.replaceWith(d);
+}
+window.rfall=function(name,type){
+  const d=document.createElement('div'); d.className="rfall";
+  d.style.background=typeColor(type)||'#555'; d.textContent=initials(name); return d;
+};
+
+/* ======================= TRADES & FREE AGENCY (client) ======================= */
+function postDraft(){ return !!league.completeAnnounced; }
+function teamName(pid){ const p=league.players.find(x=>x.id===pid); return p?p.teamName:'—'; }
+function tradeController(pid){
+  if(typeof netActive!=='function' || !netActive()) return 'LOCAL';
+  const c=net.claims[pid];
+  if(c && (c.peerId===net.selfId || net.online[c.peerId])) return c.peerId;  // claimed & online
+  return net.hostId || net.selfId;                                            // host holds unclaimed/offline slots
+}
+function iControlTeam(pid){
+  if(typeof netActive!=='function' || !netActive()) return true;
+  return tradeController(pid)===net.selfId;
+}
+function pickCost(pid,name){ const pk=league.picks.find(p=>p.playerId===pid && p.pokemonName===name); return pk?pk.cost:(POKE_BY_NAME[name]?POKE_BY_NAME[name].cost:0); }
+function sumPickCost(pid,names){ return names.reduce((s,n)=>s+pickCost(pid,n),0); }
+
+/* ---- client action bridge: guest asks host; host/offline act directly ---- */
+function tradeAct(payload){
+  if(typeof isGuest==='function' && isGuest()) net.request(payload);
+  else hostTrade(payload, (typeof netActive==='function' && netActive()) ? (net.selfId||'LOCAL') : 'LOCAL');
+}
+function proposeTrade(a,b){ tradeAct({kind:'tStart',a,b}); }
+function respondTrade(v){ tradeAct({kind:'tRespond',accept:v}); }
+function toggleOffer(side,name){
+  const t=net.trade; if(!t) return;
+  const cur=(side==='a'?t.offerA:t.offerB).slice();
+  const i=cur.indexOf(name); if(i>=0) cur.splice(i,1); else cur.push(name);
+  tradeAct({kind:'tOffer',side,items:cur});
+}
+function commitTrade(side,val){ tradeAct({kind:'tCommit',side,value:val}); }
+function confirmSoloTrade(){ commitTrade('a',true); commitTrade('b',true); }  // one manager owns both sides
+function cancelTrade(){ tradeAct({kind:'tCancel'}); }
+
+function startTradeWith(targetPid){
+  if(!postDraft()){ toast('Trades open once the draft is complete.',true); return; }
+  if(net.trade){ toast('A trade is already in progress.',true); return; }
+  const mine=league.players.map(p=>p.id).filter(pid=>pid!==targetPid && iControlTeam(pid));
+  if(!mine.length){ toast("You don't have a team to trade from.",true); return; }
+  if(mine.length===1){ proposeTrade(mine[0],targetPid); return; }
+  const opts=mine.map(pid=>`<button class="btn" data-tfrom="${pid}" style="display:block;width:100%;margin:6px 0;text-align:left">${esc(teamName(pid))}</button>`).join('');
+  openModal(`<h3>Trade with ${esc(teamName(targetPid))}</h3><p>Which of your teams is trading?</p>${opts}<div class="row"><button class="btn" data-close>Cancel</button></div>`);
+  modalBox.querySelectorAll('[data-tfrom]').forEach(b=>b.onclick=()=>{ closeModal(); proposeTrade(b.dataset.tfrom, targetPid); });
+}
+
+/* ---- trade overlay rendering (signature-guarded so it won't flicker) ---- */
+function showTradeOverlay(html){ const o=document.getElementById('tradeOverlay'); document.getElementById('tradeBox').innerHTML=html; o.classList.add('open'); }
+function closeTradeModal(){ const o=document.getElementById('tradeOverlay'); if(o) o.classList.remove('open'); }
+function tradeProjection(t,side){
+  const pid=side==='a'?t.a:t.b, other=side==='a'?t.b:t.a;
+  const mine=side==='a'?t.offerA:t.offerB, theirs=side==='a'?t.offerB:t.offerA;
+  const pts=spentBy(pid)-sumPickCost(pid,mine)+sumPickCost(other,theirs);
+  const count=rosterCount(pid)-mine.length+theirs.length;
+  return {pts,count,ok:(pts<=BUDGET && count>=MIN_ROSTER)};
+}
+function tradeColHTML(t,side){
+  const pid=side==='a'?t.a:t.b, mine=iControlTeam(pid), offer=side==='a'?t.offerA:t.offerB, pr=tradeProjection(t,side);
+  const mons=rosterOf(pid).map(pk=>{
+    const poke=POKE_BY_NAME[pk.pokemonName]; if(!poke) return '';
+    const on=offer.includes(pk.pokemonName);
+    return `<button class="trade-mon ${on?'on':''} ${mine?'':'read'}" ${mine?`data-toff="${side}|${escAttr(pk.pokemonName)}"`:''}>
+      <img src="${spritePixelURL(poke)}" alt="" onerror="this.style.visibility='hidden'">
+      <span>${esc(pk.pokemonName)}</span><i>${pk.cost}</i></button>`;
+  }).join('') || '<div class="r-empty" style="padding:8px">No Pokémon</div>';
+  return `<div class="trade-col"><div class="tc-head"><span class="nm">${esc(teamName(pid))}${mine?' · you':''}</span>
+      <span class="pts ${pr.ok?'ok':'bad'}">${pr.pts}/${BUDGET} · ${pr.count} mons</span></div>
+      <div class="trade-mons">${mons}</div></div>`;
+}
+function openTradeModal(t){
+  const prA=tradeProjection(t,'a'), prB=tradeProjection(t,'b');
+  const both=prA.ok&&prB.ok, hasItems=(t.offerA.length+t.offerB.length)>0;
+  const sole=iControlTeam(t.a)&&iControlTeam(t.b);   // one person manages both sides (solo / commissioner)
+  const acceptRow=side=>{
+    const pid=side==='a'?t.a:t.b, acc=side==='a'?t.accA:t.accB, mine=iControlTeam(pid), pr=tradeProjection(t,side);
+    return `<div class="tc-accept"><span>${esc(teamName(pid))} — <b class="${acc?'acc-yes':'acc-no'}">${acc?'Accepted ✓':'Not accepted'}</b></span>
+      ${mine?`<button class="btn sm ${acc?'':'primary'}" data-tcommit="${side}|${acc?'0':'1'}" ${pr.ok?'':'disabled'}>${acc?'Undo':'Accept'}</button>`
+            :`<span style="font-size:12px;color:var(--muted)">their call</span>`}</div>`;
+  };
+  const bad=(!both)
+    ?`<p style="color:var(--bad);margin:0 0 8px">This swap would break the ${BUDGET}-pt cap or drop a team below ${MIN_ROSTER} Pokémon — adjust it.</p>`:'';
+  const foot = sole
+    ? `<div class="trade-foot"><div class="tc-accept"><span>You manage both teams — just confirm to apply the swap.</span>
+        <button class="btn sm primary" data-tconfirm ${both&&hasItems?'':'disabled'}>Confirm trade</button></div></div>`
+    : `<div class="trade-foot">${acceptRow('a')}${acceptRow('b')}</div>`;
+  const intro = sole ? 'Tap a Pokémon on each side to swap them, then hit Confirm.' : 'Tap your Pokémon to put them on the block. Both managers accept to finalize.';
+  showTradeOverlay(`<h3>Trade · ${esc(teamName(t.a))} ⇄ ${esc(teamName(t.b))}</h3>
+    <p>${intro}</p>
+    <div class="trade-grid">${tradeColHTML(t,'a')}${tradeColHTML(t,'b')}</div>
+    ${bad}${foot}
+    <div class="row"><button class="btn danger" data-tcancel>Cancel trade</button></div>`);
+}
+function renderTrade(){
+  const t=net.trade;
+  const relevant=t && (iControlTeam(t.a)||iControlTeam(t.b)|| (typeof isHost==='function'&&isHost()));
+  const sig=relevant?JSON.stringify({id:t.id,st:t.status,oa:t.offerA,ob:t.offerB,aa:t.accA,ab:t.accB,a:t.a,b:t.b}):'';
+  if(sig===net._tradeSig) return;
+  net._tradeSig=sig;
+  if(!relevant){ closeTradeModal(); return; }
+  if(t.status==='pending'){
+    if(iControlTeam(t.b) && !iControlTeam(t.a))
+      showTradeOverlay(`<h3>Trade request</h3><p><b>${esc(teamName(t.a))}</b> wants to trade with your team <b>${esc(teamName(t.b))}</b>.</p>
+        <div class="row"><button class="btn" data-tdecline>Decline</button><button class="btn primary" data-taccept>Open trade</button></div>`);
+    else
+      showTradeOverlay(`<h3>Trade proposed</h3><p>Waiting for <b>${esc(teamName(t.b))}</b> to accept the request…</p>
+        <div class="row"><button class="btn danger" data-tcancel>Cancel request</button></div>`);
+  } else { openTradeModal(t); }
+}
+
+/* ---- free agency ---- */
+let faAddName=null;
+function openFaSwap(addName){
+  if(!postDraft()){ toast('Free agency opens after the draft is complete.',true); return; }
+  if(isDrafted(addName)){ toast(addName+' is already on a team.',true); return; }
+  const teams=league.players.map(p=>p.id).filter(pid=>iControlTeam(pid));
+  if(!teams.length){ toast("You don't control a team.",true); return; }
+  faAddName=addName;
+  if(!teams.includes(ui.faTeam)) ui.faTeam=teams[0];
+  buildFaSwapModal(teams);
+}
+function buildFaSwapModal(teams){
+  const add=POKE_BY_NAME[faAddName]; if(!add) return;
+  const team=ui.faTeam;
+  const sel=teams.length>1?`<div class="chiprow" style="margin-bottom:10px">${teams.map(pid=>`<button class="btn sm ${pid===team?'primary':''}" data-fateam="${pid}">${esc(teamName(pid))}</button>`).join('')}</div>`:'';
+  const rows=rosterOf(team).map(pk=>{
+    const newSpent=spentBy(team)-pk.cost+add.cost, over=newSpent>BUDGET;
+    return `<div class="dc-row"><span><b>${esc(pk.pokemonName)}</b> · ${pk.cost} pts</span>
+      <button class="btn sm ${over?'':'primary'}" ${over?'disabled':''} data-fadrop="${escAttr(pk.pokemonName)}" title="${over?'Would exceed the cap':'Swap'}">${over?`${newSpent}/${BUDGET} ✕`:'Drop → '+newSpent+'/'+BUDGET}</button></div>`;
+  }).join('') || '<div class="r-empty" style="padding:8px">No Pokémon to drop</div>';
+  openModal(`<h3>Free agency · add ${esc(faAddName)}</h3>
+    <p>${esc(add.name)} costs <b>${add.cost} pts</b>. Choose a Pokémon on <b>${esc(teamName(team))}</b> to drop in exchange — the roster stays the same size.</p>
+    ${sel}<div class="dc-list" style="max-height:340px;overflow:auto">${rows}</div>
+    <div class="row"><button class="btn" data-close>Cancel</button></div>`);
+  modalBox.querySelectorAll('[data-fateam]').forEach(b=>b.onclick=()=>{ ui.faTeam=b.dataset.fateam; buildFaSwapModal(teams); });
+  modalBox.querySelectorAll('[data-fadrop]').forEach(b=>b.onclick=()=>{ const drop=b.dataset.fadrop; closeModal(); faSwapReq(ui.faTeam, drop, faAddName); });
+}
+function faSwapReq(team,drop,add){
+  if(typeof isGuest==='function' && isGuest()) net.request({kind:'faSwap',team,drop,add});
+  else hostFaSwap(team,drop,add,(typeof netActive==='function' && netActive()) ? (net.selfId||'LOCAL') : 'LOCAL');
+}
+function renderFA(){
+  const fa=document.getElementById('faBtn'), banner=document.getElementById('faBanner'), show=postDraft();
+  if(fa){ fa.style.display=show?'':'none'; fa.classList.toggle('on',!!ui.faMode); }
+  if(!show && ui.faMode) ui.faMode=false;
+  if(banner) banner.hidden=!(show && ui.faMode);
+}
+
+
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function escAttr(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// For strings interpolated into a single-quoted JS string literal that lives inside an HTML attribute
+// (e.g. onerror="...('${..}')"). Must escape backslash/quote for JS *before* escAttr's HTML-entity pass,
+// since the browser HTML-decodes the attribute before handing it to the JS parser — escAttr alone isn't
+// enough (an apostrophe in a name like Farfetch'd would otherwise break out of the JS string).
+function escJs(s){ return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function escAttrJs(s){ return escAttr(escJs(s)); }
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-draft],[data-toggle],[data-remove],[data-logo],[data-up],[data-down],[data-export],[data-trade],[data-faadd]');
+  if(!t) return;
+  if(t.dataset.draft){ draftPokemon(t.dataset.draft, ui.draftFor); }
+  else if(t.dataset.toggle){
+    const nm=t.dataset.toggle, opening=!ui.openStats.has(nm);
+    const clicked=t.closest('.pcard');
+    const cards=[...document.querySelectorAll('#board .pcard')];
+    const top=clicked?clicked.offsetTop:null;
+    const rowCards=(top!=null)?cards.filter(c=>c.offsetTop===top):(clicked?[clicked]:[]);
+    rowCards.forEach(c=>{ const b=c.querySelector('[data-toggle]'); if(!b) return;
+      if(opening) ui.openStats.add(b.dataset.toggle); else ui.openStats.delete(b.dataset.toggle); });
+    renderBoard();
+  }
+  else if(t.dataset.remove){ removePick(t.dataset.remove); }
+  else if(t.dataset.logo){ openLogoPicker(t.dataset.logo); }
+  else if(t.dataset.up){ moveOrder(t.dataset.up,-1); }
+  else if(t.dataset.down){ moveOrder(t.dataset.down,1); }
+  else if(t.dataset.export){ exportTeamImage(t.dataset.export); }
+  else if(t.dataset.trade){ startTradeWith(t.dataset.trade); }
+  else if(t.dataset.faadd){ openFaSwap(t.dataset.faadd); }
+});
+document.addEventListener('input',e=>{
+  if(e.target.dataset.tname) setTeamName(e.target.dataset.tname,e.target.value);
+  else if(e.target.dataset.pname) setCoachName(e.target.dataset.pname,e.target.value);
+});
+// guests edit their OWN identity: send to host on blur (change) to avoid per-keystroke re-render flicker
+document.addEventListener('change',e=>{
+  if(!(typeof isGuest==='function' && isGuest())) return;
+  const tn=e.target.dataset&&e.target.dataset.tname, pn=e.target.dataset&&e.target.dataset.pname;
+  if(tn && mySlot()===tn) net.request({kind:'tname',playerId:tn,value:String(e.target.value).slice(0,40)});
+  else if(pn && mySlot()===pn) net.request({kind:'cname',playerId:pn,value:String(e.target.value).slice(0,40)});
+});
+document.getElementById('searchIn').addEventListener('input',e=>{ ui.search=e.target.value; renderBoard(); });
+document.getElementById('sortSel').addEventListener('change',e=>{ ui.sort=e.target.value; renderBoard(); });
+document.getElementById('draftForSel').addEventListener('change',e=>{ ui.draftFor=e.target.value; renderBoard(); renderClock(); });
+document.getElementById('availToggle').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  ui.avail=b.dataset.av; [...e.currentTarget.children].forEach(c=>c.classList.toggle('on',c===b)); renderBoard();
+});
+document.getElementById('addPlayer').onclick=addPlayerToLeague;
+document.getElementById('remPlayer').onclick=removeLastPlayer;
+document.getElementById('undoBtn').onclick=undoLastPick;
+document.getElementById('faBtn').onclick=()=>{ ui.faMode=!ui.faMode; if(ui.faMode){ ui.avail='avail'; const tg=document.getElementById('availToggle'); if(tg)[...tg.children].forEach(c=>c.classList.toggle('on',c.dataset.av==='avail')); toast('Free agency on — click “+ Swap in” on an available Pokémon.'); } renderFA(); renderBoard(); };
+document.getElementById('tradeBox').addEventListener('click',e=>{
+  const el=e.target.closest('[data-toff],[data-tcommit],[data-tconfirm],[data-tcancel],[data-taccept],[data-tdecline]'); if(!el) return;
+  if(el.dataset.toff!==undefined){ const s=el.dataset.toff.split('|'); toggleOffer(s[0], s.slice(1).join('|')); }
+  else if(el.dataset.tcommit!==undefined){ const s=el.dataset.tcommit.split('|'); commitTrade(s[0], s[1]==='1'); }
+  else if(el.dataset.tconfirm!==undefined){ confirmSoloTrade(); }
+  else if(el.dataset.tcancel!==undefined){ cancelTrade(); }
+  else if(el.dataset.taccept!==undefined){ respondTrade(true); }
+  else if(el.dataset.tdecline!==undefined){ respondTrade(false); }
+});
+
+/* schedule / playoff / KO interactions (host-gated inside handlers) */
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-pfwin],[data-pfreset],[data-koadd],[data-kobump],[data-korm]'); if(!el) return;
+  if(el.dataset.pfwin!==undefined){ const p=el.dataset.pfwin.split('|'); setPlayoffWinner(p[0], p.slice(1).join('|')); }
+  else if(el.dataset.pfreset!==undefined){ resetPlayoffs(); }
+  else if(el.dataset.koadd!==undefined){ openKoPicker(); }
+  else if(el.dataset.kobump!==undefined){ const p=el.dataset.kobump.split('|'); koBump(p.slice(0,-1).join('|'), +p[p.length-1]); }
+  else if(el.dataset.korm!==undefined){ koRemove(el.dataset.korm); }
+});
+document.addEventListener('change',e=>{
+  if(e.target && e.target.dataset && e.target.dataset.pfseed!==undefined){ setPlayoffSeed(+e.target.dataset.pfseed, e.target.value); }
+});
+
+// tabs
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    ui.tab=tab.dataset.tab;
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+ui.tab).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+});
+
+/* logo upload with downscale */
+let logoTarget=null;
+function openLogoPicker(pid){ logoTarget=pid; document.getElementById('logoInput').value=""; document.getElementById('logoInput').click(); }
+document.getElementById('logoInput').addEventListener('change',e=>{
+  const file=e.target.files[0]; if(!file||!logoTarget) return;
+  if(!/image\/(png|jpe?g)/.test(file.type)){ toast("Please choose a PNG or JPG image.",true); return; }
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const max=256; let{width:w,height:h}=img;
+      const scale=Math.min(1,max/Math.max(w,h)); w=Math.round(w*scale); h=Math.round(h*scale);
+      const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      cv.getContext('2d').drawImage(img,0,0,w,h);
+      const data=cv.toDataURL(file.type.includes('png')?'image/png':'image/jpeg',0.85);
+      if(typeof isGuest==='function' && isGuest()){
+        if(mySlot()===logoTarget){ net.request({kind:'logo',playerId:logoTarget,dataURL:data}); toast("Logo sent to host."); }
+        else toast("You can only change your own team's logo.",true);
+      } else {
+        const p=league.players.find(x=>x.id===logoTarget); if(p){ p.logo=data; save(); renderTeams(); toast("Logo updated."); }
+      }
+    };
+    img.onerror=()=>toast("Couldn't read that image.",true);
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ======================= LEAGUE MENU ======================= */
+const leagueBtn=document.getElementById('leagueBtn'), leagueMenu=document.getElementById('leagueMenu');
+leagueBtn.onclick=e=>{ e.stopPropagation(); leagueMenu.classList.toggle('open'); };
+document.addEventListener('click',e=>{ if(!leagueMenu.contains(e.target)&&e.target!==leagueBtn) leagueMenu.classList.remove('open'); });
+leagueMenu.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return; leagueMenu.classList.remove('open');
+  if(typeof canManage==='function' && !canManage()){ toast("Only the host manages the league.",true); return; }
+  const act=b.dataset.act;
+  if(act==="rename") renameLeague();
+  else if(act==="reset") resetPicks();
+  else if(act==="new") createLeagueFlow();
+  else if(act==="switch") switchLeagueFlow();
+  else if(act==="duplicate") duplicateLeague();
+  else if(act==="delete") deleteLeagueFlow();
+});
+
+function renameLeague(){
+  modalPrompt("Rename league","Give this draft league a new name.",league.name,(v)=>{
+    if(v.trim()){ league.name=v.trim(); save(); render(); toast("League renamed."); }
+  });
+}
+function resetPicks(){
+  modalConfirm("Reset all picks?","Every team's roster, the KO tracker, and the playoff bracket will be cleared. Team names, coaches and logos stay. This can't be undone.","Reset picks",()=>{
+    league.picks=[]; league.completeAnnounced=false; ui.completeShown=false; ui.draftFor=onClockPlayerId();
+    league.kos=[];
+    league.playoffs={seeds:Object.assign({},DEFAULT_SEEDS),winners:{}};
+    if(typeof net!=='undefined'){ net.trade=null; net._tradeSig=null; }
+    save(); render(); toast("All picks, KOs and the bracket cleared.");
+  },true);
+}
+function createLeagueFlow(){
+  modalPrompt("New league","Start a fresh draft. Pick a name — it'll begin with "+DEFAULT_PLAYERS+" teams.","Champions Draft "+(Object.keys(app.leagues).length+1),(v)=>{
+    const lg=newLeague(v.trim()||"Untitled League"); app.leagues[lg.id]=lg; app.activeLeagueId=lg.id; league=lg;
+    ui.draftFor=onClockPlayerId(); save(); render(); toast("Created “"+lg.name+"”.");
+  });
+}
+function duplicateLeague(){
+  const copy=JSON.parse(JSON.stringify(league)); copy.id=uid(); copy.name=league.name+" (copy)";
+  copy.createdAt=copy.updatedAt=Date.now();
+  // new ids for players + remap order/picks
+  const map={}; copy.players.forEach(p=>{const o=p.id;p.id=uid();map[o]=p.id;});
+  copy.order=copy.order.map(id=>map[id]); copy.picks.forEach(pk=>pk.playerId=map[pk.playerId]);
+  app.leagues[copy.id]=copy; app.activeLeagueId=copy.id; league=copy;
+  ui.draftFor=onClockPlayerId(); save(); render(); toast("Duplicated league.");
+}
+function switchLeagueFlow(){
+  const ids=Object.keys(app.leagues);
+  const rows=ids.map(id=>{ const lg=app.leagues[id]; const cur=id===app.activeLeagueId;
+    const picks=lg.picks.length; const teams=lg.players.length;
+    return `<div class="lgitem ${cur?'cur':''}">
+      <div class="li-main"><div class="li-name">${esc(lg.name)}</div>
+        <div class="li-meta">${teams} teams · ${picks} picks · saved ${timeAgo(lg.updatedAt)}</div></div>
+      ${cur?'<span class="cur-tag">Active</span>':`<button class="btn primary sm" data-load="${id}">Load</button>`}
+    </div>`;}).join('');
+  openModal(`<h3>Load league</h3><p>Switch between your saved drafts. Everything is stored on this computer.</p>
+    <div class="lglist">${rows}</div>
+    <div class="row"><button class="btn" data-close>Close</button></div>`);
+  document.getElementById('modalBox').addEventListener('click',function h(e){
+    const lb=e.target.closest('[data-load]'); if(lb){ app.activeLeagueId=lb.dataset.load; league=app.leagues[lb.dataset.load];
+      ui.draftFor=onClockPlayerId(); save(); render(); closeModal(); toast("Loaded “"+league.name+"”."); }
+  });
+}
+function deleteLeagueFlow(){
+  if(Object.keys(app.leagues).length<=1){ toast("Can't delete your only league — create another first.",true); return; }
+  modalConfirm("Delete this league?","“"+league.name+"” and all its picks will be permanently removed from this computer.","Delete league",()=>{
+    delete app.leagues[app.activeLeagueId];
+    app.activeLeagueId=Object.keys(app.leagues)[0]; league=app.leagues[app.activeLeagueId];
+    ui.draftFor=onClockPlayerId(); save(); render(); toast("League deleted.");
+  },true);
+}
+
+/* ======================= MODALS / TOAST ======================= */
+const overlay=document.getElementById('overlay'), modalBox=document.getElementById('modalBox');
+function openModal(html){ modalBox.innerHTML=html; overlay.classList.add('open');
+  modalBox.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeModal); }
+function closeModal(){ overlay.classList.remove('open'); }
+overlay.addEventListener('click',e=>{ if(e.target===overlay) closeModal(); });
+function modalPrompt(title,desc,val,onok){
+  openModal(`<h3>${esc(title)}</h3><p>${desc}</p>
+    <input id="mpIn" value="${escAttr(val||'')}" spellcheck="false">
+    <div class="row"><button class="btn" data-close>Cancel</button><button class="btn primary" id="mpOk">Save</button></div>`);
+  const inp=document.getElementById('mpIn'); inp.focus(); inp.select();
+  const go=()=>{ onok(inp.value); closeModal(); };
+  document.getElementById('mpOk').onclick=go;
+  inp.onkeydown=e=>{ if(e.key==='Enter')go(); };
+}
+function modalConfirm(title,desc,okLabel,onok,danger){
+  openModal(`<h3>${esc(title)}</h3><p>${desc}</p>
+    <div class="row"><button class="btn" data-close>Cancel</button>
+    <button class="btn ${danger?'danger':'primary'}" id="mcOk" ${danger?'style="border-color:var(--bad);color:var(--bad)"':''}>${esc(okLabel)}</button></div>`);
+  document.getElementById('mcOk').onclick=()=>{ onok(); closeModal(); };
+}
+let toastT;
+function toast(msg,err){ const el=document.getElementById('toast'); el.querySelector('.msg').textContent=msg;
+  el.classList.toggle('err',!!err); el.classList.add('show'); clearTimeout(toastT);
+  toastT=setTimeout(()=>el.classList.remove('show'),2600); }
+function timeAgo(ts){ const s=(Date.now()-ts)/1000; if(s<60)return"just now"; if(s<3600)return Math.floor(s/60)+"m ago";
+  if(s<86400)return Math.floor(s/3600)+"h ago"; return Math.floor(s/86400)+"d ago"; }
+
+/* ======================= INIT ======================= */
+function boot(){ load(); ui.draftFor=onClockPlayerId(); render(); }
+</script>
+<script>
+/* ============================================================
+   MULTIPLAYER  —  peer-to-peer, host-authoritative (Trystero)
+   The host's tab holds the real `league`. Guests mirror it and
+   send action requests; the host validates, applies, re-broadcasts.
+   ============================================================ */
+const APP_ID='champions-draft-league-v1';
+const net = {
+  role:null,                 // null | 'host' | 'guest'
+  code:null, room:null, mod:null, selfId:null, hostId:null,
+  claims:{},                 // playerId -> {peerId,name}   (host-authoritative, broadcast)
+  online:{},                 // peerId -> name              (currently connected)
+  peers:{},                  // host only: peerId -> {name}
+  myName:'', _act:{}, _lastPicks:-1,
+  trade:null, _tradeSig:null          // transient trade session (host-authoritative, broadcast)
+};
+
+/* ---- permission helpers (default permissive when offline) ---- */
+function netActive(){ return !!net.role; }
+function isHost(){ return net.role==='host'; }
+function isGuest(){ return net.role==='guest'; }
+function canManage(){ return !netActive() || isHost(); }
+function mySlot(){ for(const pid in net.claims){ const c=net.claims[pid]; if(c && c.peerId===net.selfId) return pid; } return null; }
+function canIDraftNow(){
+  if(!netActive()) return true;
+  const oc=onClockPlayerId();
+  if(isHost()) return true;            // host (commissioner) may always draft for whoever is on the clock
+  return !!(mySlot() && mySlot()===oc);    // a guest may only draft when their own slot is on the clock
+}
+
+/* ---- load Trystero from a CDN (browser only, needs internet) ---- */
+async function loadTrystero(){
+  if(net.mod) return net.mod;
+  const urls=[
+    'https://esm.run/trystero@0.25.2',
+    'https://esm.sh/trystero@0.25.2',
+    'https://esm.run/trystero@0.25.2/nostr',
+    'https://esm.sh/trystero@0.25.2/nostr'
+  ];
+  let err;
+  for(const u of urls){
+    try{ const m=await import(u); if(m && m.joinRoom){ net.mod=m; return m; } err=new Error('Loaded '+u+' but it had no joinRoom export'); }
+    catch(e){ err=e; try{ console.error('[multiplayer] could not load',u,'-',e&&e.message); }catch(_){ } }
+  }
+  throw err || new Error('Could not load the multiplayer library from any CDN.');
+}
+
+function genCode(){ const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s=''; for(let i=0;i<5;i++) s+=a[Math.floor(Math.random()*a.length)]; return s; }
+function inviteLink(){ try{ const u=new URL(location.href); u.search='?room='+net.code; return u.toString(); }catch(e){ return '?room='+net.code; } }
+
+/* ---- session resume (survives an accidental tab refresh) ---- */
+function saveSession(){ try{ sessionStorage.setItem('cdlMP', JSON.stringify({role:net.role,code:net.code,name:net.myName})); }catch(e){} }
+function clearSession(){ try{ sessionStorage.removeItem('cdlMP'); }catch(e){} }
+
+/* ---- online roster bookkeeping (host) ---- */
+function recomputeOnline(){
+  net.online={}; net.online[net.selfId]= net.myName || '(Host)';
+  for(const pid in net.peers){ net.online[pid]=net.peers[pid].name||'Player'; }
+}
+
+/* ---- wire up the room's message channels ---- */
+function setupRoom(){
+  const r=net.room;
+  // Trystero 0.25 API: makeAction(id) -> {send, onMessage, ...}; peer events are assignable properties;
+  // send targets a peer via {target:id}; receivers get (data, {peerId}).
+  const sync=r.makeAction('sync');
+  const req=r.makeAction('req');
+  const hello=r.makeAction('hello');
+  const notice=r.makeAction('notice');
+  net._act={sync,req,hello,notice};
+
+  if(isHost()){
+    r.onPeerJoin=pid=>{ if(!net.peers[pid]) net.peers[pid]={name:'Player'}; recomputeOnline(); net.broadcast(); renderNet(); refreshMpPanel(); };
+    r.onPeerLeave=pid=>{ delete net.peers[pid]; recomputeOnline(); net.broadcast(); renderNet(); render(); refreshMpPanel(); };
+    hello.onMessage=(d,meta)=>{ const pid=meta&&meta.peerId; if(!pid) return; net.peers[pid]={name:(d&&d.name)?String(d.name).slice(0,24):'Player'}; recomputeOnline(); net.broadcast(); renderNet(); render(); refreshMpPanel(); };
+    req.onMessage=(d,meta)=>hostHandleReq(d, meta&&meta.peerId);
+  } else {
+    sync.onMessage=d=>guestApplySync(d);
+    notice.onMessage=d=>{ if(d&&d.msg) toast(String(d.msg),true); };
+    r.onPeerJoin=pid=>{ net.hostId=net.hostId||pid; try{ net._act.hello.send({name:net.myName}); }catch(e){} renderNet(); };
+    r.onPeerLeave=pid=>{ if(pid===net.hostId){ net.hostId=null; toast('Host disconnected — the draft is paused.',true); renderNet(); } };
+  }
+}
+
+/* ---- host: send the authoritative state to everyone (or one peer) ---- */
+net.broadcast=function(targetId){
+  if(!isHost()||!net._act||!net._act.sync) return;
+  const payload={ league, claims:net.claims, online:net.online, hostId:net.selfId, code:net.code, trade:net.trade };
+  try{ net._act.sync.send(payload, targetId?{target:targetId}:undefined); }catch(e){}
+};
+/* ---- guest → host action request ---- */
+net.request=function(payload){
+  if(!net._act || !net._act.req || !net.hostId){ toast('Not connected to the host yet.',true); return; }
+  try{ net._act.req.send(payload, {target:net.hostId}); }catch(e){ toast('Could not reach the host.',true); }
+};
+net.notice=function(peerId,msg){ try{ net._act && net._act.notice && net._act.notice.send({msg},{target:peerId}); }catch(e){} };
+
+/* ---- guest: apply incoming authoritative state ---- */
+function guestApplySync(data){
+  if(!data||!data.league) return;
+  net.claims=data.claims||{}; net.online=data.online||{}; net.hostId=data.hostId||net.hostId; net.code=data.code||net.code;
+  net.trade=data.trade||null;
+  const before=net._lastPicks;
+  league=data.league;
+  if(!league.order) league.order=league.players.map(p=>p.id);
+  ui.draftFor=onClockPlayerId();
+  render();
+  const now=league.picks.length;
+  if(before>=0 && now>before){ const last=league.picks[now-1]; const tm=league.players.find(p=>p.id===last.playerId); toast((tm?tm.teamName:'A team')+' drafted '+last.pokemonName); }
+  net._lastPicks=now;
+}
+
+/* ---- host: handle a request from a guest ---- */
+function hostHandleReq(d,pid){
+  if(!isHost()||!d) return;
+  if(d.kind==='draft'){
+    const oc=onClockPlayerId(); const c=net.claims[oc];
+    if(!c || c.peerId!==pid){ net.notice(pid,"It's not your turn to draft."); return; }
+    draftPokemon(d.name, oc);
+  } else if(d.kind==='claim'){
+    hostClaim(pid, d.playerId, net.peers[pid] && net.peers[pid].name);
+  } else if(d.kind==='release'){
+    const c=net.claims[d.playerId];
+    if(c && c.peerId===pid){ delete net.claims[d.playerId]; net.broadcast(); renderNet(); render(); refreshMpPanel(); }
+  } else if(d.kind==='tname' || d.kind==='cname' || d.kind==='logo'){
+    const c=net.claims[d.playerId];
+    if(!c || c.peerId!==pid){ net.notice(pid,"You can only edit your own team."); return; }   // must own that slot
+    const pl=league.players.find(x=>x.id===d.playerId); if(!pl) return;
+    if(d.kind==='tname'){ pl.teamName=String(d.value||'').slice(0,40); }
+    else if(d.kind==='cname'){ pl.name=String(d.value||'').slice(0,40); }
+    else if(d.kind==='logo'){ if(typeof d.dataURL==='string' && d.dataURL.startsWith('data:image')) pl.logo=d.dataURL; }
+    save(); render();
+  } else if(/^(tStart|tRespond|tOffer|tCommit|tCancel)$/.test(d.kind)){
+    hostTrade(d, pid);
+  } else if(d.kind==='faSwap'){
+    hostFaSwap(d.team, d.drop, d.add, pid);
+  }
+}
+
+/* ---- host trade engine ---- */
+function tradeBcast(){ if(isHost()) net.broadcast(); render(); }
+function notifyBoth(t,msg){
+  if(!t) return;
+  [t.a,t.b].forEach(pid=>{ const peer=tradeController(pid); if(peer && peer!==net.selfId && peer!=='LOCAL') net.notice(peer,msg); });
+}
+function hostTrade(d,by){
+  if(!postDraft()) return;
+  if(d.kind==='tStart'){
+    if(net.trade){ if(by!==net.selfId && by!=='LOCAL') net.notice(by,'A trade is already in progress.'); else toast('Finish the current trade first.',true); return; }
+    if(d.a===d.b || !league.players.some(p=>p.id===d.a) || !league.players.some(p=>p.id===d.b)) return;
+    if(tradeController(d.a)!==by){ if(by!==net.selfId && by!=='LOCAL') net.notice(by,'You can only trade from your own team.'); return; }
+    const same=tradeController(d.a)===tradeController(d.b);
+    net.trade={ id:'t'+Date.now().toString(36), a:d.a, b:d.b, offerA:[], offerB:[], accA:false, accB:false, status: same?'active':'pending' };
+    net._tradeSig=null; tradeBcast(); return;
+  }
+  if(!net.trade) return;
+  const t=net.trade;
+  if(d.kind==='tRespond'){
+    if(tradeController(t.b)!==by) return;
+    if(d.accept){ t.status='active'; net._tradeSig=null; tradeBcast(); }
+    else { net.trade=null; net._tradeSig=null; notifyBoth(t,'Trade declined.'); tradeBcast(); }
+  } else if(d.kind==='tOffer'){
+    const pid=d.side==='a'?t.a:t.b; if(tradeController(pid)!==by) return;
+    const own=new Set(rosterOf(pid).map(p=>p.pokemonName));
+    const items=(Array.isArray(d.items)?d.items:[]).filter(n=>own.has(n));
+    t[d.side==='a'?'offerA':'offerB']=items; t.accA=false; t.accB=false; tradeBcast();
+  } else if(d.kind==='tCommit'){
+    const pid=d.side==='a'?t.a:t.b; if(tradeController(pid)!==by) return;
+    const pr=tradeProjection(t,d.side); if(d.value && !pr.ok){ return; }   // can't accept an illegal swap
+    t[d.side==='a'?'accA':'accB']=!!d.value;
+    if(t.accA && t.accB){ hostExecuteTrade(); return; }
+    tradeBcast();
+  } else if(d.kind==='tCancel'){
+    if(tradeController(t.a)!==by && tradeController(t.b)!==by && by!=='LOCAL' && by!==net.selfId) return;
+    net.trade=null; net._tradeSig=null; notifyBoth(t,'Trade cancelled.'); tradeBcast();
+  }
+}
+function hostExecuteTrade(){
+  const t=net.trade; if(!t) return;
+  const ownA=new Set(rosterOf(t.a).map(p=>p.pokemonName)), ownB=new Set(rosterOf(t.b).map(p=>p.pokemonName));
+  const fail=msg=>{ t.accA=false; t.accB=false; net._tradeSig=null; if(isHost()) net.broadcast(); render(); notifyBoth(t,'Trade blocked: '+msg); toast('Trade blocked: '+msg,true); };
+  if(!t.offerA.every(n=>ownA.has(n)) || !t.offerB.every(n=>ownB.has(n))){ fail('a roster changed — re-check the offer.'); return; }
+  if((t.offerA.length+t.offerB.length)===0){ fail('add at least one Pokémon.'); return; }
+  const prA=tradeProjection(t,'a'), prB=tradeProjection(t,'b');
+  if(!prA.ok){ fail(teamName(t.a)+' would break the cap or fall below '+MIN_ROSTER+'.'); return; }
+  if(!prB.ok){ fail(teamName(t.b)+' would break the cap or fall below '+MIN_ROSTER+'.'); return; }
+  league.picks.forEach(pk=>{
+    if(pk.playerId===t.a && t.offerA.includes(pk.pokemonName)) pk.playerId=t.b;
+    else if(pk.playerId===t.b && t.offerB.includes(pk.pokemonName)) pk.playerId=t.a;
+  });
+  const desc=teamName(t.a)+' ⇄ '+teamName(t.b);
+  net.trade=null; net._tradeSig=null;
+  save(); render();
+  notifyBoth({a:t.a,b:t.b},'Trade complete: '+desc); toast('Trade complete: '+desc);
+}
+function hostFaSwap(team,dropName,addName,by){
+  if(!postDraft()) return;
+  if(tradeController(team)!==by){ if(by && by!==net.selfId && by!=='LOCAL') net.notice(by,'You can only manage your own team.'); return; }
+  const dropPick=league.picks.find(p=>p.playerId===team && p.pokemonName===dropName);
+  const tell=(m,err)=>{ if(by && by!==net.selfId && by!=='LOCAL') net.notice(by,m); else toast(m,!!err); };
+  if(!dropPick){ tell('That Pokémon is no longer on the roster.',true); return; }
+  if(isDrafted(addName)){ tell(addName+' is already taken.',true); return; }
+  const add=POKE_BY_NAME[addName]; if(!add) return;
+  const newSpent=spentBy(team)-dropPick.cost+add.cost;
+  if(newSpent>BUDGET){ tell(teamName(team)+' would be over the cap ('+newSpent+'/'+BUDGET+').',true); return; }
+  dropPick.pokemonName=addName; dropPick.cost=add.cost;
+  save(); render();
+  tell(teamName(team)+': '+dropName+' → '+addName,false);
+  if(by===net.selfId || by==='LOCAL') toast(teamName(team)+': '+dropName+' → '+addName);
+}
+
+/* ---- claim / release a slot ---- */
+function hostClaim(peerId, playerId, name){
+  if(!league.players.some(p=>p.id===playerId)) return;
+  const cur=net.claims[playerId];
+  const curOnline = cur && (cur.peerId===net.selfId || net.online[cur.peerId]);
+  if(cur && cur.peerId!==peerId && curOnline){ net.notice(peerId,'That slot is already taken.'); return; }
+  for(const k in net.claims){ if(net.claims[k] && net.claims[k].peerId===peerId) delete net.claims[k]; } // one slot per person
+  net.claims[playerId]={peerId, name:(name||'Player')};
+  net.broadcast(); renderNet(); render(); refreshMpPanel();
+}
+function doClaim(pid){
+  if(isHost()) hostClaim(net.selfId, pid, net.myName||'(Host)');
+  else if(isGuest()) net.request({kind:'claim', playerId:pid});
+}
+function doRelease(pid){
+  if(isHost()){ const c=net.claims[pid]; if(c && c.peerId===net.selfId){ delete net.claims[pid]; net.broadcast(); renderNet(); render(); refreshMpPanel(); } }
+  else if(isGuest()) net.request({kind:'release', playerId:pid});
+}
+document.addEventListener('click',e=>{
+  const cl=e.target.closest('[data-claim]'); if(cl){ doClaim(cl.dataset.claim); return; }
+  const rl=e.target.closest('[data-release]'); if(rl){ doRelease(rl.dataset.release); return; }
+});
+
+/* ---- start / join / leave ---- */
+async function startHost(code, resuming){
+  try{
+    toast('Starting room…');
+    const {joinRoom,selfId}=await loadTrystero();
+    net.role='host'; net.selfId=selfId; net.hostId=selfId; net.code=code||genCode();
+    net.myName=net.myName||'(Host)'; net.peers={}; recomputeOnline();
+    net.room=joinRoom({appId:APP_ID}, net.code);
+    setupRoom(); net.broadcast(); saveSession(); renderNet(); render();
+    if(!resuming) openMpPanel();
+  }catch(e){ net.role=null; clearSession(); renderNet(); try{ console.error('[multiplayer] host start failed:', e); }catch(_){ } toast("Couldn't start multiplayer — the library may be blocked (ad blocker / strict network). Open the browser console (F12) to see why.",true); }
+}
+async function joinGuest(code,name){
+  try{
+    toast('Connecting…');
+    const {joinRoom,selfId}=await loadTrystero();
+    net.role='guest'; net.selfId=selfId; net.code=code; net.myName=(name||'Player').slice(0,24); net._lastPicks=-1; net.hostId=null;
+    net.room=joinRoom({appId:APP_ID}, code);
+    setupRoom(); saveSession(); renderNet(); render();
+    closeModal();
+    toast('Joining draft '+code+'…');
+  }catch(e){ net.role=null; clearSession(); renderNet(); try{ console.error('[multiplayer] join failed:', e); }catch(_){ } toast("Couldn't join — the library may be blocked (ad blocker / strict network). Open the browser console (F12) to see why.",true); }
+}
+function leaveNet(){
+  const wasGuest=isGuest();
+  try{ if(net.room) net.room.leave(); }catch(e){}
+  net.role=null; net.room=null; net.hostId=null; net.claims={}; net.online={}; net.peers={}; net._act={}; net._lastPicks=-1; net.trade=null; net._tradeSig=null;
+  clearSession();
+  if(wasGuest){ if(app&&app.leagues&&app.activeLeagueId){ league=app.leagues[app.activeLeagueId]; } ui.draftFor=onClockPlayerId(); }
+  closeModal(); renderNet(); render();
+  toast(wasGuest?'Left the draft.':'Stopped hosting.');
+}
+function resumeSession(){
+  let s; try{ s=JSON.parse(sessionStorage.getItem('cdlMP')||'null'); }catch(e){ s=null; }
+  if(!s||!s.role) return false;
+  if(s.role==='host'){ net.myName=s.name||'(Host)'; startHost(s.code,true); return true; }
+  if(s.role==='guest'){ joinGuest(s.code, s.name); return true; }
+  return false;
+}
+window.addEventListener('beforeunload', e=>{ if(isHost()){ e.preventDefault(); e.returnValue='You are hosting a live draft. Closing this tab ends it for everyone.'; } });
+
+/* ======================= MULTIPLAYER PANEL UI ======================= */
+function openMpPanel(){
+  if(!netActive()) return openMpOffline();
+  if(isHost()) return openMpHost();
+  return openMpGuest();
+}
+function openMpOffline(){
+  openModal(`<h3>Multiplayer draft</h3>
+    <p>Run the draft live with everyone on their own device. One person hosts; the rest join with a code or link.</p>
+    <div class="mp-choice">
+      <button class="mp-opt" id="mpHostOpt"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14"/></svg></span>
+        <span><span class="ti">Host this draft</span><span class="ds">You stay the host — your roster, points and order become the live board everyone sees. Keep this tab open during the draft.</span></span></button>
+      <button class="mp-opt" id="mpJoinOpt"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M21 3l-9 9M10 6H4v14h14v-6"/></svg></span>
+        <span><span class="ti">Join a draft</span><span class="ds">Got a code or link from a host? Enter it, pick a name, and claim your team slot.</span></span></button>
+    </div>
+    <div class="row"><button class="btn" data-close>Close</button></div>`);
+  document.getElementById('mpHostOpt').onclick=()=>{ closeModal(); startHost(genCode()); };
+  document.getElementById('mpJoinOpt').onclick=()=>openJoinPrompt('');
+}
+function openJoinPrompt(code){
+  openModal(`<h3>Join a draft</h3><p>Enter the host's code and the name your friends will see.</p>
+    <label style="font-size:12px;color:var(--muted)">Draft code</label>
+    <input id="mpCode" value="${escAttr(code||'')}" placeholder="e.g. K7P2Q" spellcheck="false" style="text-transform:uppercase;letter-spacing:4px;font-weight:700">
+    <label style="font-size:12px;color:var(--muted);margin-top:8px;display:block">Your name</label>
+    <input id="mpName" placeholder="Your name" spellcheck="false">
+    <div class="row"><button class="btn" data-close>Cancel</button><button class="btn primary" id="mpJoinGo">Join draft</button></div>`);
+  const cIn=document.getElementById('mpCode'), nIn=document.getElementById('mpName');
+  (code?nIn:cIn).focus();
+  document.getElementById('mpJoinGo').onclick=()=>{
+    const c=(cIn.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+    const n=(nIn.value||'').trim();
+    if(c.length<4){ toast('Enter the full draft code.',true); return; }
+    if(!n){ toast('Add a name so others know who you are.',true); return; }
+    joinGuest(c,n);
+  };
+  nIn.onkeydown=e=>{ if(e.key==='Enter') document.getElementById('mpJoinGo').click(); };
+}
+function peerListHTML(){
+  const oc=onClockPlayerId();
+  return orderedPlayers().map((p,i)=>{
+    const c=net.claims[p.id]; const onl=c&&(c.peerId===net.selfId||net.online[c.peerId]);
+    const who=c?(esc(c.name)+(onl?'':' · offline')):'<span style="color:var(--faint)">open</span>';
+    return `<div class="peer-row"><span class="pd" style="${onl?'':'background:var(--warn);box-shadow:none'}"></span>
+      <span class="pn">${esc(p.teamName)}</span><span class="ps">${who}${p.id===oc?' · on the clock':''}</span></div>`;
+  }).join('');
+}
+function openMpHost(){
+  openModal(`<h3>You're hosting</h3>
+    <p>Share this code (or the link) so others can join and claim a team.</p>
+    <div class="code-box">${esc(net.code||'')}</div>
+    <div class="link-row"><input id="mpLink" readonly value="${escAttr(inviteLink())}"><button class="btn primary" id="mpCopy">Copy link</button></div>
+    <div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px">Teams &amp; who's in</div>
+    <div class="peer-list" id="mpPeers">${peerListHTML()}</div>
+    <div class="row"><button class="btn danger" id="mpStop" style="border-color:var(--bad);color:var(--bad)">Stop hosting</button><button class="btn primary" data-close>Done</button></div>
+    <div class="mp-note">Keep this tab open for the whole draft — you're the host, so closing it ends the session for everyone. Players claim their team on the <b>Teams</b> tab and can only draft when it's their turn.</div>`);
+  document.getElementById('mpCopy').onclick=()=>{ const i=document.getElementById('mpLink'); i.select(); try{ navigator.clipboard.writeText(i.value); }catch(e){ document.execCommand('copy'); } toast('Invite link copied.'); };
+  document.getElementById('mpStop').onclick=()=>{ leaveNet(); };
+}
+function openMpGuest(){
+  const slot=mySlot(); const tm=slot?league.players.find(p=>p.id===slot):null;
+  openModal(`<h3>${net.hostId?'Connected':'Connecting…'}</h3>
+    <p>You're in draft <b style="color:var(--accent);letter-spacing:2px">${esc(net.code||'')}</b> as <b>${esc(net.myName)}</b>.</p>
+    <div class="peer-row" style="margin-bottom:12px"><span class="pd" style="${net.hostId?'':'background:var(--warn);box-shadow:none'}"></span>
+      <span class="pn">${net.hostId?'Linked to host':'Reaching host…'}</span>
+      <span class="ps">${tm?('Your team: '+esc(tm.teamName)):'No team yet'}</span></div>
+    ${tm?'':'<div class="mp-note">Head to the <b>Teams</b> tab and tap <b>Claim this slot</b> on an open team to take your spot.</div>'}
+    <div class="row"><button class="btn danger" id="mpLeave" style="border-color:var(--bad);color:var(--bad)">Leave draft</button><button class="btn primary" data-close>Done</button></div>`);
+  document.getElementById('mpLeave').onclick=()=>{ leaveNet(); };
+}
+function refreshMpPanel(){
+  if(!document.getElementById('overlay').classList.contains('open')) return;
+  const peers=document.getElementById('mpPeers'); if(peers && isHost()) peers.innerHTML=peerListHTML();
+}
+
+/* ======================= MP RENDER (pill / banner / control visibility) ======================= */
+function renderNet(){
+  const online=netActive();
+  const pill=document.getElementById('connPill');
+  if(pill){
+    const txt=pill.querySelector('.txt');
+    if(!online){ pill.dataset.state='off'; txt.textContent='Offline'; }
+    else if(isHost()){ pill.dataset.state='host'; txt.textContent='Hosting · '+Object.keys(net.online).length+' online'; }
+    else { pill.dataset.state='guest'; txt.textContent= net.hostId?'Connected':'Connecting…'; }
+  }
+  const mp=document.getElementById('mpBtn'); if(mp){ const t=mp.querySelector('.mptxt'); if(t) t.textContent=online?(isHost()?'Hosting':'In draft'):'Multiplayer'; }
+  // hide host-only controls from guests
+  const manage=canManage();
+  const undo=document.getElementById('undoBtn'); if(undo) undo.style.display=manage?'':'none';
+  const lgm=document.querySelector('.lg-menu'); if(lgm) lgm.style.display=manage?'':'none';
+  const pc=document.querySelector('.pcount'); if(pc) pc.style.visibility=manage?'':'hidden';
+  // turn banner
+  const banner=document.getElementById('turnBanner');
+  if(banner){
+    if(!online){ banner.hidden=true; }
+    else{
+      banner.hidden=false;
+      const oc=onClockPlayerId(); const tm=league.players.find(p=>p.id===oc); const slot=mySlot();
+      if(isGuest() && !net.hostId){ banner.className='turn-banner wait'; banner.textContent='Connecting to the host…'; }
+      else if(slot && slot===oc){ banner.className='turn-banner you'; banner.textContent="You're on the clock — pick your Pokémon!"; }
+      else if(isHost()){ const c=net.claims[oc]; banner.className='turn-banner host'; banner.textContent='On the clock: '+(tm?tm.teamName:'—')+(c?(' · '+c.name):' · unclaimed (you can draft)'); }
+      else { const c=net.claims[oc]; banner.className='turn-banner wait'; banner.textContent='Waiting for '+(tm?tm.teamName:'—')+(c?(' · '+c.name):'')+' to pick…'; }
+    }
+  }
+}
+
+document.getElementById('mpBtn').onclick=openMpPanel;
+
+/* ======================= BOOT ======================= */
+boot();
+(function(){
+  let params; try{ params=new URLSearchParams(location.search); }catch(e){ params=null; }
+  const room=params? (params.get('room')||'').toUpperCase().replace(/[^A-Z0-9]/g,'') : '';
+  if(resumeSession()){ /* rejoining previous session */ }
+  else if(room){ openJoinPrompt(room); }
+  renderNet();
+})();
+</script>
+</body>
+</html>
